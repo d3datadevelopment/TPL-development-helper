@@ -23,7 +23,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
      */
     public function d3GetOrderMailContent($oOrder, $sType)
     {
-        if (oxRegistry::getConfig()->getActiveShop()->isProductiveMode()) {
+        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
             return '';
         }
 

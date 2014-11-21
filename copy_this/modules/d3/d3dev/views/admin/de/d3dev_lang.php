@@ -25,15 +25,15 @@ $aLang = array(
     'charset'                                                   => 'ISO-8859-15',
 
     'SHOP_MODULE_GROUP_d3dev_order'                             => 'Bestellungsablauf manipulieren',
-    'SHOP_MODULE_blD3DevAvoidDeleteBasketInThankyou'            => 'Warenkorb wird nach Bestellabschluss nicht geleert',
-    'HELP_SHOP_MODULE_blD3DevAvoidDeleteBasketInThankyou'       => 'Damit kann auf der Bestellbestätigungsseite '.
+    'SHOP_MODULE_blD3DevAvoidDelBasket'                         => 'Warenkorb wird nach Bestellabschluss nicht geleert',
+    'HELP_SHOP_MODULE_blD3DevAvoidDelBasket'                    => 'Damit kann auf der Bestellbestätigungsseite '.
         '(Thankyou) durch den "zurück"-Button in den Warenkorb Schritt 4 gewechselt werden und die Bestellung erneut '.
         'abgeschickt werden. Eine erneute Bestückung des Warenkorbs ist nicht nötig. Beim erneuten Absenden wird '.
         'jeweils eine weitere Bestellung angelegt werden. Eventuell verwendete Gutscheine müssen so eingestellt '.
         'werden, dass diese mehrfach verwendet werden können.',
-    'SHOP_MODULE_blD3DevShowThankyouWithoutAsociatedOrder'      => 'Thankyou-Seite kann auch ohne Bestellung '.
+    'SHOP_MODULE_blD3DevShowThankyou'                           => 'Thankyou-Seite kann auch ohne Bestellung '.
         'aufgerufen werden',
-    'HELP_SHOP_MODULE_blD3DevShowThankyouWithoutAsociatedOrder' => 'Ohne abgesendete Bestellung läßt sich die '.
+    'HELP_SHOP_MODULE_blD3DevShowThankyou'                      => 'Ohne abgesendete Bestellung läßt sich die '.
         'Thankyou-Seite im Standardshop nicht aufrufen. Diese Option stellt dies für Entwicklungszwecke zur '.
         'Verfügung. <br>Den Link zum Seitenaufruf haben wir hier im Stamm-Tab hinterlegt. Die Seite öffnet sich in '.
         'einem neuen Browserfenster. <br>Für die Anzeige wird die letzte vorliegende Bestellung geladen. Über den '.

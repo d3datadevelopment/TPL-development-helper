@@ -24,8 +24,8 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
         parent::init();
 
         if (oxRegistry::getConfig()->getRequestParameter('d3dev')
-            && false == oxRegistry::getConfig()->getActiveShop()->isProductiveMode()
-            && oxRegistry::getConfig()->getConfigParam('blD3DevShowThankyouWithoutAsociatedOrder')
+            && false == (bool) oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value
+            && oxRegistry::getConfig()->getConfigParam('blD3DevShowThankyou')
         ) {
             $oOrder = $this->d3GetLastOrder();
             $oBasket = $oOrder->d3DevGetOrderBasket();
@@ -38,7 +38,7 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
      */
     public function d3GetLastOrder()
     {
-        if (oxRegistry::getConfig()->getActiveShop()->isProductiveMode()) {
+        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
             return false;
         }
 

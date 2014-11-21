@@ -18,7 +18,7 @@ class d3dev extends oxUBase
 {
     public function showOrderMailContent()
     {
-        if (oxRegistry::getConfig()->getActiveShop()->isProductiveMode()
+        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value
             || false == oxRegistry::getConfig()->getConfigParam('blD3DevShowOrderMailsInBrowser')
         ) {
             oxRegistry::getUtils()->redirect(oxRegistry::getConfig()->getShopUrl().'index.php?cl=start');

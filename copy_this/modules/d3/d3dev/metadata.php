@@ -62,13 +62,13 @@ $aModule = array(
     'settings'    => array(
         array(
             'group' => 'd3dev_order',
-            'name' => 'blD3DevAvoidDeleteBasketInThankyou',
+            'name' => 'blD3DevAvoidDelBasket',
             'type' => 'bool',
             'value' => 'false'
         ),
         array(
             'group' => 'd3dev_order',
-            'name' => 'blD3DevShowThankyouWithoutAsociatedOrder',
+            'name' => 'blD3DevShowThankyou',
             'type' => 'bool',
             'value' => 'false'
         ),
