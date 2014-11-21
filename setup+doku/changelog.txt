@@ -1,0 +1,4 @@
+=> 1.0.0.0
+- unterbindet das Löschen des Warenkorbs nach Bestellabschluss
+- Thankyou ist ohne Bestellabschluss aufrufbar (unter Angabe der Bestellnummer auch für eine bestimmte Bestellung)
+- Bestellbestätigungsmails sind im Browser darstellbar (unter Angabe der Bestellnummer auch für eine bestimmte Bestellung)
