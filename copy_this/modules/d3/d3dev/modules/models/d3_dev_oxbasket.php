@@ -34,4 +34,26 @@ class d3_dev_oxbasket extends d3_dev_oxbasket_parent
             $oBasketItem->d3ClearArticle();
         }
     }
+
+    /**
+     * Calculates total basket discount value.
+     */
+    protected function _calcBasketTotalDiscount()
+    {
+        if ($this->_oTotalDiscount === null || (!$this->isAdmin())) {
+            $this->_oTotalDiscount = $this->_getPriceObject();
+
+            if (is_array($this->_aDiscounts)) {
+                foreach ($this->_aDiscounts as $oDiscount) {
+                    // skipping bundle discounts
+                    if ($oDiscount->sType == 'itm') {
+                        continue;
+                    }
+
+                    // add discount value to total basket discount
+                    $this->_oTotalDiscount->add($oDiscount->dDiscount);
+                }
+            }
+        }
+    }
 }
