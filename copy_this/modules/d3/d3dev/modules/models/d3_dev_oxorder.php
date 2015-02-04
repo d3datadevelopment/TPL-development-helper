@@ -34,7 +34,6 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
 
         // add this order articles to basket and recalculate basket
         $this->_addOrderArticlesToBasket($oBasket, $oOrderArticles);
-
         // recalculating basket
         $oBasket->calculateBasket(true);
         $oBasket->d3ClearBasketItemArticles();
@@ -63,6 +62,7 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
     public function d3getLastOrder()
     {
         $this->load($this->d3getLastOrderId());
+        $this->_d3AddVouchers();
     }
 
     /**
@@ -77,5 +77,18 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
         }
 
         return $oBasket;
+    }
+    
+    protected function _d3AddVouchers()
+    {
+        $sSelect = "SELECT oxid FROM oxvouchers WHERE oxorderid = ".oxDb::getDb(oxDb::FETCH_MODE_ASSOC)->quote($this->getId()).";";
+        
+        $aResult = oxDb::getDb(oxDb::FETCH_MODE_ASSOC)->getArray($sSelect);
+
+        foreach ($aResult as $aFields) {
+            $oVoucher = oxNew('oxvoucher');
+            $oVoucher->load($aFields['oxid']);
+            $this->_aVoucherList[$oVoucher->getId()] = $oVoucher;
+        }
     }
 }
