@@ -21,7 +21,11 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
 {
     public function init()
     {
+        $sSessChallenge = oxRegistry::getSession()->getVariable('sess_challenge');
+
         parent::init();
+
+        oxRegistry::getSession()->setVariable('sess_challenge', $sSessChallenge);
 
         if (oxRegistry::getConfig()->getRequestParameter('d3dev')
             && false == (bool) oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value
