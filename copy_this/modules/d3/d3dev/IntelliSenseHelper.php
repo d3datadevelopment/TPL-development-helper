@@ -22,6 +22,11 @@ class d3_dev_thankyou_parent extends thankyou {}
 class d3_dev_oxorder_parent extends oxorder {}
 
 /**
+ * Class d3_dev_d3inquiry_parent
+ */
+class d3_dev_d3inquiry_parent extends d3inquiry {}
+
+/**
  * Class d3_dev_oxorderarticle
  */
 class d3_dev_oxorderarticle_parent extends oxOrderArticle {}

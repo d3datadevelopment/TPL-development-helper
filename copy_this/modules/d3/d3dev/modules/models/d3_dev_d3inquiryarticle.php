@@ -14,7 +14,7 @@
  * @link      http://www.oxidmodule.com
  */
 
-class d3_dev_oxorderarticle extends d3_dev_oxorderarticle_parent
+class d3_dev_d3inquiryarticle extends d3_dev_d3inquiryarticle_parent
 {
     /**
      * @return array
@@ -24,5 +24,15 @@ class d3_dev_oxorderarticle extends d3_dev_oxorderarticle_parent
         $oArticle = $this->getArticle();
 
         return $oArticle->getCustomerAlsoBoughtThisProducts();
+    }
+
+    /**
+     * Returns true if ordered product is bundle
+     *
+     * @return bool
+     */
+    public function isBundle()
+    {
+        return ( bool ) $this->d3inquiryarticles__oxisbundle->value;
     }
 }

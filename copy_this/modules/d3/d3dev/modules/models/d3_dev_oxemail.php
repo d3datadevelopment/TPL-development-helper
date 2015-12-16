@@ -79,4 +79,68 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
         return $oSmarty->fetch($myConfig->getTemplatePath($sTpl, false));
     }
+
+    /**
+     * @param d3_dev_d3inquiry $oInquiry
+     *
+     * @return mixed|string
+     */
+    public function d3GetInquiryMailContent($oInquiry, $sType)
+    {
+        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+            return '';
+        }
+
+        switch (strtolower($sType)) {
+            case 'owner_html':
+                $sTpl = $this->_sInquiryOwnerTemplate;
+                break;
+            case 'owner_plain':
+                $sTpl = $this->_sInquiryOwnerPlainTemplate;
+                break;
+            case 'user_plain':
+                $sTpl = $this->_sInquiryUserPlainTemplate;
+                break;
+            case 'user_html':
+            default:
+                $sTpl = $this->_sInquiryUserTemplate;
+        }
+
+        $myConfig = $this->getConfig();
+
+        $oShop = $this->_getShop();
+
+        // cleanup
+        $this->_clearMailer();
+
+        // add user defined stuff if there is any
+        $oInquiry = $this->_addUserInfoOrderEMail($oInquiry);
+
+        $oUser = $oInquiry->getInquiryUser();
+        $this->setUser($oUser);
+
+        // send confirmation to shop owner
+        // send not pretending from order user, as different email domain rise spam filters
+        $this->setFrom($oShop->oxshops__oxowneremail->value);
+
+        $oLang = oxRegistry::getLang();
+        $iOrderLang = $oLang->getObjectTplLanguage();
+
+        // if running shop language is different from admin lang. set in config
+        // we have to load shop in config language
+        if ($oShop->getLanguage() != $iOrderLang) {
+            $oShop = $this->_getShop($iOrderLang);
+        }
+
+        $this->setSmtp($oShop);
+
+        // create messages
+        $oSmarty = $this->_getSmarty();
+        $this->setViewData("inquiry", $oInquiry);
+
+        // Process view data array through oxoutput processor
+        $this->_processViewArray();
+
+        return $oSmarty->fetch($myConfig->getTemplatePath($sTpl, false));
+    }
 }
