@@ -35,4 +35,24 @@ class d3dev extends oxUBase
         echo $oEmail->d3GetOrderMailContent($oOrder, $sTpl);
         die();
     }
+
+    public function showInquiryMailContent()
+    {
+        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value
+            || false == oxRegistry::getConfig()->getConfigParam('blD3DevShowOrderMailsInBrowser')
+        ) {
+            oxRegistry::getUtils()->redirect(oxRegistry::getConfig()->getShopUrl().'index.php?cl=start');
+        }
+
+        $sTpl = oxRegistry::getConfig()->getRequestParameter('type');
+
+        /** @var d3_dev_thankyou $oThankyou */
+        $oThankyou = oxNew('thankyou');
+        $oOrder = $oThankyou->d3GetLastInquiry();
+
+        /** @var d3_dev_oxemail $oEmail */
+        $oEmail = oxNew('oxemail');
+        echo $oEmail->d3GetInquiryMailContent($oOrder, $sTpl);
+        die();
+    }
 }

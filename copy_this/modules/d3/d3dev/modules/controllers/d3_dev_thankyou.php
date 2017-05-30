@@ -52,4 +52,20 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
 
         return $oOrder;
     }
+
+    /**
+     * @return d3_dev_d3inquiry
+     */
+    public function d3GetLastInquiry()
+    {
+        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+            return false;
+        }
+
+        /** @var d3_dev_d3inquiry $oInquiry */
+        $oInquiry = oxNew('d3inquiry');
+        $oInquiry->d3getLastInquiry();
+
+        return $oInquiry;
+    }
 }

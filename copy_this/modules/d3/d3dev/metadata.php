@@ -31,10 +31,14 @@ $aModule = array(
             '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=thankyou&d3dev=1&d3ordernr=" target="_new">Thankyou ist ohne Bestellung aufrufbar</a></li>'.
             '<li>Mail-Templates k&ouml;nnen im Browser ausgegeben werden'.
                 '<ul>'.
-                '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=owner_html&d3ordernr=" target="_new">Owner HTML</a></li>'.
-                '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=owner_plain&d3ordernr=" target="_new">Owner Plain</a></li>'.
-                '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=user_html&d3ordernr=" target="_new">User HTML</a></li>'.
-                '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=user_plain&d3ordernr=" target="_new">User Plain</a></li></ul>'.
+                '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=owner_html&d3ordernr=" target="_new">Order Owner HTML</a></li>'.
+                '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=owner_plain&d3ordernr=" target="_new">Order Owner Plain</a></li>'.
+                '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=user_html&d3ordernr=" target="_new">Order User HTML</a></li>'.
+                '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=user_plain&d3ordernr=" target="_new">Order User Plain</a></li>'.
+                '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showInquiryMailContent&type=owner_html&d3inquirynr=" target="_new">Inquiry Owner HTML</a></li>'.
+                '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showInquiryMailContent&type=owner_plain&d3inquirynr=" target="_new">Inquiry Owner Plain</a></li>'.
+                '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showInquiryMailContent&type=user_html&d3inquirynr=" target="_new">Inquiry User HTML</a></li>'.
+                '<li><a style="text-decoration: underline;" href="'.oxRegistry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showInquiryMailContent&type=user_plain&d3inquirynr=" target="_new">Inquiry User Plain</a></li></ul>'.
             '</li></ul>Jede dieser Optionen muss aus Sicherheitsgr&uuml;nden unter "Einstell." aktiviert werden. Weiterhin darf der Shop nicht im Produktivmodus betrieben werden.',
         'en'    => ''),
     // 'thumbnail'    => 'picture.png',
@@ -80,3 +84,9 @@ $aModule = array(
         ),
     ),
 );
+
+
+if (class_exists('d3inquiry')) {
+    $aModule['extend']['d3inquiry']  = 'd3/d3dev/modules/models/d3_dev_d3inquiry';
+    $aModule['extend']['d3inquiryarticle']  = 'd3/d3dev/modules/models/d3_dev_d3inquiryarticle';
+}
