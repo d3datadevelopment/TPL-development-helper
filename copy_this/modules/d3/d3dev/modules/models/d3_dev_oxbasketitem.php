@@ -20,4 +20,16 @@ class d3_dev_oxbasketitem extends d3_dev_oxbasketitem_parent
     {
         $this->_oArticle = null;
     }
+
+    public function getTitle()
+    {
+        $oArticle = $this->getArticle();
+        $this->_sTitle = $oArticle->oxarticles__oxtitle->value;
+
+        if ($oArticle->oxarticles__oxvarselect->value) {
+            $this->_sTitle = $this->_sTitle . ', ' . $this->getVarSelect();
+        }
+
+        return $this->_sTitle;
+    }
 }
