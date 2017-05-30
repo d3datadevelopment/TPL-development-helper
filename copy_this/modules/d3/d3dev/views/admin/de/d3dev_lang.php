@@ -46,4 +46,12 @@ $aLang = array(
         'jeweiligen Mails sind im Stamm-Tab aufgelistet.<br>Für die Anzeige wird ohne Angabe der Bestellnummer die '.
         'letzte vorliegende Bestellung geladen. Über den Parameter "d3ordernr=X" kann eine bestimmten Bestellung '.
         'vorgegeben werden.',
+
+    'SHOP_MODULE_GROUP_d3dev_mailblock'                         => 'Mailversand',
+    'SHOP_MODULE_blD3DevBlockMails'                             => 'Mails an beliebige Mailadressen werden nicht '.
+        'versandt',
+    'HELP_SHOP_MODULE_blD3DevBlockMails'                        => 'Der Mailversand wird komplett geblockt.',
+    'SHOP_MODULE_sD3DevRedirectMail'                            => 'versendete Mails an diese Adresse umleiten',
+    'HELP_SHOP_MODULE_sD3DevRedirectMail'                       => 'Wenn leer, erfolgt keine Umleitung. Ohne '.
+        'zusätzliche Blockieroption werden die Mails dann an den original Empfänger gesendet.',
 );

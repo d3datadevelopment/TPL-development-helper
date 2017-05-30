@@ -143,4 +143,92 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
         return $oSmarty->fetch($myConfig->getTemplatePath($sTpl, false));
     }
+
+    protected function _sendMail()
+    {
+        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+            return parent::_sendMail();
+        }
+
+        $this->d3clearRecipients();
+        $this->d3clearCC();
+        $this->d3clearBCC();
+
+        if (count($this->getRecipient())) {
+            return parent::_sendMail();
+        }
+
+        return true;
+    }
+
+    public function d3clearRecipients()
+    {
+        $aRecipients = array();
+        if (is_array($this->_aRecipients) && count($this->_aRecipients)) {
+            foreach ($this->_aRecipients as $aRecInfo) {
+                if (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))
+                    && $sNewRecipient != $aRecInfo[0]
+                ) {
+                    $aRecInfo[1] = $aRecInfo[1]." (".$aRecInfo[0].")";
+                    $aRecInfo[0] = $sNewRecipient;
+                    $aRecipients[] = $aRecInfo;
+                } elseif (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))) {
+                    $aRecipients[] = $aRecInfo;
+                }
+            }
+        }
+
+        $this->_aRecipients = $aRecipients;
+    }
+
+    public function d3clearCC()
+    {
+        $aCc = array();
+        if (is_array($this->cc) && count($this->cc)) {
+            foreach ($this->cc as $aRecInfo) {
+                if (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))
+                    && $sNewRecipient != $aRecInfo[0]
+                ) {
+                    $aRecInfo[1] = $aRecInfo[1]." (".$aRecInfo[0].")";
+                    $aRecInfo[0] = $sNewRecipient;
+                    $aCc[] = $aRecInfo;
+                } elseif (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))) {
+                    $aCc[] = $aRecInfo;
+                }
+            }
+        }
+
+        $this->cc = $aCc;
+    }
+
+    public function d3clearBCC()
+    {
+        $aCc = array();
+        if (is_array($this->bcc) && count($this->bcc)) {
+            foreach ($this->bcc as $aRecInfo) {
+                if (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))
+                    && $sNewRecipient != $aRecInfo[0]
+                ) {
+                    $aRecInfo[1] = $aRecInfo[1]." (".$aRecInfo[0].")";
+                    $aRecInfo[0] = $sNewRecipient;
+                    $aCc[] = $aRecInfo;
+                } elseif (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))) {
+                    $aCc[] = $aRecInfo;
+                }
+            }
+        }
+
+        $this->bcc = $aCc;
+    }
+
+    public function getNewRecipient($sMailAddress)
+    {
+        if (oxRegistry::getConfig()->getConfigParam('blD3DevBlockMails')) {
+            return false;
+        } elseif (oxRegistry::getConfig()->getConfigParam('sD3DevRedirectMail')) {
+            return trim(oxRegistry::getConfig()->getConfigParam('sD3DevRedirectMail'));
+        }
+
+        return $sMailAddress;
+    }
 }
