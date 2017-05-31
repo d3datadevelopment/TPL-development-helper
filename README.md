@@ -3,8 +3,9 @@ TPL Development Helper
 
 Das Tool soll bei täglichen Entwicklungsaufgaben im OXID eShop helfen, die (systembedingt) vom Shopsystem erschwert werden.
 
-* Mailversand übers Shopframework wird blockiert __oder__
-* Mails werden an alternative Mailadresse umgeleitet
+* Mailversand (übers Shopframework) übers Shopframework wird blockiert __oder__
+* Mails (übers Shopframework) werden an alternative Mailadresse umgeleitet
+    (Das Tool setzt direkt an der oxemail::_sendMail()-Methode an und kann damit __jeden__ Mailversand kontrollieren, der übers Framework läuft. Man muss nicht X verschiedene Module überwachen und hat auch Kontrolle über Mailerweiterungen, die keinen Stage-Einsatz vorsehen.)
 
 - unterbindet das Löschen des Warenkorbs nach Bestellabschluss
 - Thankyou-Seite ist auch ohne Bestellabschluss aufrufbar (unter Angabe der Bestellnummer auch für eine bestimmte Bestellung)
