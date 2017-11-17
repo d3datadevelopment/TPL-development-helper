@@ -18,6 +18,8 @@ class d3dev extends oxUBase
 {
     public function showOrderMailContent()
     {
+        header('Content-type: text/html; charset='.oxRegistry::getLang()->translateString('charset'));
+        
         if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value
             || false == oxRegistry::getConfig()->getConfigParam('blD3DevShowOrderMailsInBrowser')
         ) {
