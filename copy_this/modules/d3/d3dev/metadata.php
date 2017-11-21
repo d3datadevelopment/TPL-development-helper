@@ -45,7 +45,7 @@ $aModule = array(
             '* Ordernummer an URL erg&auml;nzen, wenn bestimmte Bestellungen angezeigt werden sollen',
         'en'    => ''),
     // 'thumbnail'    => 'picture.png',
-    'version'      => '1.1',
+    'version'      => '1.2.0.0',
     'author'       => 'D&sup3; Data Development (Inh.: Thomas Dartsch)',
     'email'        => 'support@shopmodule.com',
     'url'          => 'http://www.oxidmodule.com/',

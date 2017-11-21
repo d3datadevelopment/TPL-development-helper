@@ -16,6 +16,58 @@
 
 class d3dev extends oxUBase
 {
+    public function init()
+    {
+        $this->_authenticate();
+
+        parent::init();
+    }
+
+    protected function _authenticate ()
+    {
+        $oConfig = oxRegistry::getConfig();
+
+        try {
+            $sUser = $oConfig->getRequestParameter( 'usr' );
+            $sPassword = $oConfig->getRequestParameter( 'pwd' );
+
+            if ( !$sUser || !$sPassword ) {
+                $sUser = $_SERVER[ 'PHP_AUTH_USER' ];
+                $sPassword = $_SERVER[ 'PHP_AUTH_PW' ];
+            }
+
+            if ( !$sUser || !$sPassword ) {
+                $sHttpAuthorization = $_REQUEST[ 'HTTP_AUTHORIZATION' ];
+                if ( $sHttpAuthorization ) {
+                    $sUser = null;
+                    $sPassword = null;
+                    $aHttpAuthorization = explode( ' ', $sHttpAuthorization );
+                    if ( is_array( $aHttpAuthorization ) && count( $aHttpAuthorization ) >= 2 && strtolower( $aHttpAuthorization[ 0 ] ) == 'basic' ) {
+                        $sBasicAuthorization = base64_decode( $aHttpAuthorization[ 1 ] );
+                        $aBasicAuthorization = explode( ':', $sBasicAuthorization );
+                        if ( is_array( $aBasicAuthorization ) && count( $aBasicAuthorization ) >= 2 ) {
+                            $sUser = $aBasicAuthorization[ 0 ];
+                            $sPassword = $aBasicAuthorization[ 1 ];
+                        }
+                    }
+                }
+            }
+            /** @var oxUser $oUser */
+            $oUser = oxNew( 'oxuser' );
+            if ( !$sUser || !$sPassword || !$oUser->login( $sUser, $sPassword ) ) {
+                $oEx = oxNew( 'oxuserexception' );
+                $oEx->setMessage( 'EXCEPTION_USER_NOVALIDLOGIN' );
+                throw $oEx;
+            }
+        }
+        catch ( Exception $oEx ) {
+            $oShop = $oConfig->getActiveShop();
+            header( 'WWW-Authenticate: Basic realm="' . $oShop->oxshops__oxname->value . '"' );
+            header( 'HTTP/1.0 401 Unauthorized' );
+            exit( 1 );
+        }
+    }
+
     public function showOrderMailContent()
     {
         header('Content-type: text/html; charset='.oxRegistry::getLang()->translateString('charset'));
