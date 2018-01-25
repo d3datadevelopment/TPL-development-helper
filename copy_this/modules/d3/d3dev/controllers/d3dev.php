@@ -1,5 +1,9 @@
 <?php
- /**
+
+use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\Eshop\Core\Request;
+
+/**
  * This Software is the property of Data Development and is protected
  * by copyright law - it is NOT Freeware.
  *
@@ -14,7 +18,7 @@
  * @link      http://www.oxidmodule.com
  */
 
-class d3dev extends oxUBase
+class d3dev extends \OxidEsales\EshopProfessional\Application\Controller\FrontendController
 {
     public function init()
     {
@@ -25,11 +29,10 @@ class d3dev extends oxUBase
 
     protected function _authenticate ()
     {
-        $oConfig = oxRegistry::getConfig();
-
+        $request = oxNew(Request::class);
         try {
-            $sUser = $oConfig->getRequestParameter( 'usr' );
-            $sPassword = $oConfig->getRequestParameter( 'pwd' );
+            $sUser = $request->getRequestParameter( 'usr' );
+            $sPassword = $request->getRequestParameter( 'pwd' );
 
             if ( !$sUser || !$sPassword ) {
                 $sUser = $_SERVER[ 'PHP_AUTH_USER' ];
@@ -52,16 +55,16 @@ class d3dev extends oxUBase
                     }
                 }
             }
-            /** @var oxUser $oUser */
-            $oUser = oxNew( 'oxuser' );
+            $oUser = oxNew( \OxidEsales\Eshop\Application\Model\User::class );
             if ( !$sUser || !$sPassword || !$oUser->login( $sUser, $sPassword ) ) {
-                $oEx = oxNew( 'oxuserexception' );
-                $oEx->setMessage( 'EXCEPTION_USER_NOVALIDLOGIN' );
+                /** @var \OxidEsales\Eshop\Core\Exception\UserException $oEx */
+                $oEx = oxNew( \OxidEsales\Eshop\Core\Exception\UserException::class, 'EXCEPTION_USER_NOVALIDLOGIN' );
+
                 throw $oEx;
             }
         }
         catch ( Exception $oEx ) {
-            $oShop = $oConfig->getActiveShop();
+            $oShop = Registry::getConfig()->getActiveShop();
             header( 'WWW-Authenticate: Basic realm="' . $oShop->oxshops__oxname->value . '"' );
             header( 'HTTP/1.0 401 Unauthorized' );
             exit( 1 );
@@ -70,42 +73,42 @@ class d3dev extends oxUBase
 
     public function showOrderMailContent()
     {
-        header('Content-type: text/html; charset='.oxRegistry::getLang()->translateString('charset'));
-        
-        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value
-            || false == oxRegistry::getConfig()->getConfigParam('blD3DevShowOrderMailsInBrowser')
+        header('Content-type: text/html; charset='.Registry::getLang()->translateString('charset'));
+
+        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value
+            || false == Registry::getConfig()->getConfigParam('blD3DevShowOrderMailsInBrowser')
         ) {
-            oxRegistry::getUtils()->redirect(oxRegistry::getConfig()->getShopUrl().'index.php?cl=start');
+            Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl().'index.php?cl=start');
         }
 
-        $sTpl = oxRegistry::getConfig()->getRequestParameter('type');
+        $sTpl = oxNew(Request::class)->getRequestParameter('type');
 
         /** @var d3_dev_thankyou $oThankyou */
-        $oThankyou = oxNew('thankyou');
+        $oThankyou = oxNew(\OxidEsales\Eshop\Application\Controller\ThankYouController::class);
         $oOrder = $oThankyou->d3GetLastOrder();
 
         /** @var d3_dev_oxemail $oEmail */
-        $oEmail = oxNew('oxemail');
+        $oEmail = oxNew(\OxidEsales\Eshop\Core\Email::class);
         echo $oEmail->d3GetOrderMailContent($oOrder, $sTpl);
         die();
     }
 
     public function showInquiryMailContent()
     {
-        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value
-            || false == oxRegistry::getConfig()->getConfigParam('blD3DevShowOrderMailsInBrowser')
+        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value
+            || false == Registry::getConfig()->getConfigParam('blD3DevShowOrderMailsInBrowser')
         ) {
-            oxRegistry::getUtils()->redirect(oxRegistry::getConfig()->getShopUrl().'index.php?cl=start');
+            Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl().'index.php?cl=start');
         }
 
-        $sTpl = oxRegistry::getConfig()->getRequestParameter('type');
+        $sTpl = oxNew(Request::class)->getRequestParameter('type');
 
         /** @var d3_dev_thankyou $oThankyou */
-        $oThankyou = oxNew('thankyou');
+        $oThankyou = oxNew(\OxidEsales\Eshop\Application\Controller\ThankYouController::class);
         $oOrder = $oThankyou->d3GetLastInquiry();
 
         /** @var d3_dev_oxemail $oEmail */
-        $oEmail = oxNew('oxemail');
+        $oEmail = oxNew(\OxidEsales\Eshop\Core\Email::class);
         echo $oEmail->d3GetInquiryMailContent($oOrder, $sTpl);
         die();
     }

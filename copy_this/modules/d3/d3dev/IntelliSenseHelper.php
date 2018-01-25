@@ -14,12 +14,12 @@
  * @link      http://www.oxidmodule.com
  */
 
-class d3_dev_thankyou_parent extends thankyou {}
+class d3_dev_thankyou_parent extends \OxidEsales\Eshop\Application\Controller\ThankYouController {}
 
 /**
  * Class d3_dev_oxorder_parent
  */
-class d3_dev_oxorder_parent extends oxorder {}
+class d3_dev_oxorder_parent extends \OxidEsales\Eshop\Application\Model\Order {}
 
 /**
  * Class d3_dev_d3inquiry_parent
@@ -29,24 +29,24 @@ class d3_dev_d3inquiry_parent extends d3inquiry {}
 /**
  * Class d3_dev_oxorderarticle
  */
-class d3_dev_oxorderarticle_parent extends oxOrderArticle {}
+class d3_dev_oxorderarticle_parent extends \OxidEsales\Eshop\Application\Model\OrderArticle {}
 
 /**
  * Class d3_dev_oxemail_parent
  */
-class d3_dev_oxemail_parent extends oxemail {}
+class d3_dev_oxemail_parent extends \OxidEsales\Eshop\Core\Email {}
 
 /**
  * Class d3_dev_order_parent
  */
-class d3_dev_order_parent extends order {}
+class d3_dev_order_parent extends \OxidEsales\Eshop\Application\Controller\OrderController {}
 
 /**
  * Class d3_dev_oxbasket_parent
  */
-class d3_dev_oxbasket_parent extends oxbasket {}
+class d3_dev_oxbasket_parent extends \OxidEsales\Eshop\Application\Model\Basket {}
 
 /**
  * Class d3_dev_oxbasketitem_parent
  */
-class d3_dev_oxbasketitem_parent extends oxBasketItem {}
+class d3_dev_oxbasketitem_parent extends \OxidEsales\Eshop\Application\Model\BasketItem {}
