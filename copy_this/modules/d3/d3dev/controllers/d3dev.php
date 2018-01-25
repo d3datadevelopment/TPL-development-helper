@@ -13,8 +13,8 @@ use OxidEsales\Eshop\Core\Request;
  *
  * http://www.shopmodule.com
  *
- * @copyright © D³ Data Development, Thomas Dartsch
- * @author    D³ Data Development - Daniel Seifert <ds@shopmodule.com>
+ * @copyright Â© DÂ³ Data Development, Thomas Dartsch
+ * @author    DÂ³ Data Development - Daniel Seifert <ds@shopmodule.com>
  * @link      http://www.oxidmodule.com
  */
 
