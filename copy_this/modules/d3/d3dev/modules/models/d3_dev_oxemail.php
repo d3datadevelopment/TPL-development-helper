@@ -1,5 +1,8 @@
 <?php
- /**
+
+use OxidEsales\Eshop\Core\Registry;
+
+/**
  * This Software is the property of Data Development and is protected
  * by copyright law - it is NOT Freeware.
  *
@@ -19,11 +22,13 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
     /**
      * @param d3_dev_oxorder $oOrder
      *
+     * @param                $sType
+     *
      * @return mixed|string
      */
     public function d3GetOrderMailContent($oOrder, $sType)
     {
-        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
             return '';
         }
 
@@ -59,7 +64,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         // send not pretending from order user, as different email domain rise spam filters
         $this->setFrom($oShop->oxshops__oxowneremail->value);
 
-        $oLang = oxRegistry::getLang();
+        $oLang = Registry::getLang();
         $iOrderLang = $oLang->getObjectTplLanguage();
 
         // if running shop language is different from admin lang. set in config
@@ -71,6 +76,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $this->setSmtp($oShop);
 
         // create messages
+        /** @var Smarty $oSmarty */
         $oSmarty = $this->_getSmarty();
         $this->setViewData("order", $oOrder);
 
@@ -83,11 +89,13 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
     /**
      * @param d3_dev_d3inquiry $oInquiry
      *
+     * @param                  $sType
+     *
      * @return mixed|string
      */
     public function d3GetInquiryMailContent($oInquiry, $sType)
     {
-        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
             return '';
         }
 
@@ -123,7 +131,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         // send not pretending from order user, as different email domain rise spam filters
         $this->setFrom($oShop->oxshops__oxowneremail->value);
 
-        $oLang = oxRegistry::getLang();
+        $oLang = Registry::getLang();
         $iOrderLang = $oLang->getObjectTplLanguage();
 
         // if running shop language is different from admin lang. set in config
@@ -135,6 +143,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $this->setSmtp($oShop);
 
         // create messages
+        /** @var Smarty $oSmarty */
         $oSmarty = $this->_getSmarty();
         $this->setViewData("inquiry", $oInquiry);
 
@@ -146,7 +155,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     protected function _sendMail()
     {
-        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
             return parent::_sendMail();
         }
 
@@ -223,10 +232,10 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     public function getNewRecipient($sMailAddress)
     {
-        if (oxRegistry::getConfig()->getConfigParam('blD3DevBlockMails')) {
+        if (Registry::getConfig()->getConfigParam('blD3DevBlockMails')) {
             return false;
-        } elseif (oxRegistry::getConfig()->getConfigParam('sD3DevRedirectMail')) {
-            return trim(oxRegistry::getConfig()->getConfigParam('sD3DevRedirectMail'));
+        } elseif (Registry::getConfig()->getConfigParam('sD3DevRedirectMail')) {
+            return trim(Registry::getConfig()->getConfigParam('sD3DevRedirectMail'));
         }
 
         return $sMailAddress;

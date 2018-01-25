@@ -1,8 +1,9 @@
 <?php
 
 // .../?cl=thankyou[&d3orderid=23]
+use OxidEsales\Eshop\Core\Registry;
 
- /**
+/**
  * This Software is the property of Data Development and is protected
  * by copyright law - it is NOT Freeware.
  *
@@ -19,17 +20,23 @@
 
 class d3_dev_thankyou extends d3_dev_thankyou_parent
 {
+    /**
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
+     * @throws object
+     * @throws oxUserException
+     */
     public function init()
     {
-        $sSessChallenge = oxRegistry::getSession()->getVariable('sess_challenge');
+        $sSessChallenge = Registry::getSession()->getVariable('sess_challenge');
 
         parent::init();
 
-        oxRegistry::getSession()->setVariable('sess_challenge', $sSessChallenge);
+        Registry::getSession()->setVariable('sess_challenge', $sSessChallenge);
 
-        if (oxRegistry::getConfig()->getRequestParameter('d3dev')
-            && false == (bool) oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value
-            && oxRegistry::getConfig()->getConfigParam('blD3DevShowThankyou')
+        if (oxNew(\OxidEsales\Eshop\Core\Request::class)->getRequestParameter('d3dev')
+            && false == (bool) Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value
+            && Registry::getConfig()->getConfigParam('blD3DevShowThankyou')
         ) {
             $this->_d3authenticate();
             $oOrder = $this->d3GetLastOrder();
@@ -38,13 +45,17 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
         }
     }
 
+    /**
+     * @throws object
+     * @throws oxUserException
+     */
     protected function _d3authenticate ()
     {
-        $oConfig = oxRegistry::getConfig();
+        $request = oxNew(\OxidEsales\Eshop\Core\Request::class);
 
         try {
-            $sUser = $oConfig->getRequestParameter( 'usr' );
-            $sPassword = $oConfig->getRequestParameter( 'pwd' );
+            $sUser = $request->getRequestParameter( 'usr' );
+            $sPassword = $request->getRequestParameter( 'pwd' );
 
             if ( !$sUser || !$sPassword ) {
                 $sUser = $_SERVER[ 'PHP_AUTH_USER' ];
@@ -67,16 +78,16 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
                     }
                 }
             }
-            /** @var oxUser $oUser */
-            $oUser = oxNew( 'oxuser' );
+            /** @var \OxidEsales\Eshop\Application\Model\User $oUser */
+            $oUser = oxNew( \OxidEsales\Eshop\Application\Model\User::class );
             if ( !$sUser || !$sPassword || !$oUser->login( $sUser, $sPassword ) ) {
-                $oEx = oxNew( 'oxuserexception' );
-                $oEx->setMessage( 'EXCEPTION_USER_NOVALIDLOGIN' );
+                /** @var \OxidEsales\Eshop\Core\Exception\UserException $oEx */
+                $oEx = oxNew( \OxidEsales\Eshop\Core\Exception\UserException::class, 'EXCEPTION_USER_NOVALIDLOGIN');
                 throw $oEx;
             }
         }
         catch ( Exception $oEx ) {
-            $oShop = $oConfig->getActiveShop();
+            $oShop = Registry::getConfig()->getActiveShop();
             header( 'WWW-Authenticate: Basic realm="' . $oShop->oxshops__oxname->value . '"' );
             header( 'HTTP/1.0 401 Unauthorized' );
             exit( 1 );
@@ -84,27 +95,30 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
     }
 
     /**
-     * @return d3_dev_oxorder
+     * @return bool|d3_dev_oxorder
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
      */
     public function d3GetLastOrder()
     {
-        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
             return false;
         }
 
         /** @var d3_dev_oxorder $oOrder */
-        $oOrder = oxNew('oxorder');
+        $oOrder = oxNew(\OxidEsales\Eshop\Application\Model\Order::class);
         $oOrder->d3getLastOrder();
 
         return $oOrder;
     }
 
     /**
-     * @return d3_dev_d3inquiry
+     * @return bool|d3_dev_d3inquiry
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
      */
     public function d3GetLastInquiry()
     {
-        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
             return false;
         }
 

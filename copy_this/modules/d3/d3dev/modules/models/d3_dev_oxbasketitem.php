@@ -21,6 +21,12 @@ class d3_dev_oxbasketitem extends d3_dev_oxbasketitem_parent
         $this->_oArticle = null;
     }
 
+    /**
+     * @return string
+     * @throws \OxidEsales\EshopCommunity\Application\Model\oxArticleException
+     * @throws \OxidEsales\Eshop\Core\Exception\StandardException
+     * @throws oxNoArticleException
+     */
     public function getTitle()
     {
         $oArticle = $this->getArticle();

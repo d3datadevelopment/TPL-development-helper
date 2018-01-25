@@ -1,5 +1,8 @@
 <?php
- /**
+
+use OxidEsales\Eshop\Core\Registry;
+
+/**
  * This Software is the property of Data Development and is protected
  * by copyright law - it is NOT Freeware.
  *
@@ -18,8 +21,8 @@ class d3_dev_oxbasket extends d3_dev_oxbasket_parent
 {
     public function deleteBasket()
     {
-        if (oxRegistry::getConfig()->getActiveShop()->oxshops__oxproductive->value
-            || false == oxRegistry::getConfig()->getConfigParam('blD3DevAvoidDelBasket')
+        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value
+            || false == Registry::getConfig()->getConfigParam('blD3DevAvoidDelBasket')
         ) {
             parent::deleteBasket();
         }

@@ -17,7 +17,7 @@
 class d3_dev_oxorderarticle extends d3_dev_oxorderarticle_parent
 {
     /**
-     * @return array
+     * @return null|\OxidEsales\EshopCommunity\Application\Model\ArticleList
      */
     public function getCustomerAlsoBoughtThisProducts()
     {

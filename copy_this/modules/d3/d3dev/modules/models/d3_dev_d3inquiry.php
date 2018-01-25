@@ -1,5 +1,9 @@
 <?php
- /**
+
+use OxidEsales\Eshop\Core\DatabaseProvider;
+use OxidEsales\Eshop\Core\Registry;
+
+/**
  * This Software is the property of Data Development and is protected
  * by copyright law - it is NOT Freeware.
  *
@@ -20,11 +24,13 @@ class d3_dev_d3inquiry extends d3_dev_d3inquiry_parent
 
     /**
      * @return d3_dev_oxbasket
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
      */
     public function d3DevGetOrderBasket()
     {
         /** @var oxbasket $oBasket */
-        $oBasket = $this->_getInquiryBasket();
+        $this->_getInquiryBasket();
 
         // unsetting bundles
         $oOrderArticles = $this->getInquiryArticles();
@@ -45,20 +51,24 @@ class d3_dev_d3inquiry extends d3_dev_d3inquiry_parent
 
     /**
      * @return string
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
      */
     public function d3getLastInquiryId()
     {
-        if (oxRegistry::getConfig()->getRequestParameter('d3inquirynr')) {
-            $sWhere = ' oxinquirynr = ' . (int) oxRegistry::getConfig()->getRequestParameter('d3inquirynr');
-        } else {
-            $sWhere = 1;
+        $inquiryNr = (int) oxNew(\OxidEsales\Eshop\Core\Request::class)->getRequestParameter('d3inquirynr');
+        $sWhere = 1;
+        if ($inquiryNr) {
+            $sWhere = ' oxinquirynr = ' .  $inquiryNr;
         }
 
         $sSelect = "SELECT oxid FROM ".getViewName('d3inquiry')." WHERE ".$sWhere." ORDER BY oxinquirydate DESC LIMIT 1";
 
-        return oxDb::getDb(oxDb::FETCH_MODE_ASSOC)->getOne($sSelect);
+        return DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getOne($sSelect);
     }
 
+    /**
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     */
     public function d3getLastInquiry()
     {
         $this->load($this->d3getLastInquiryId());
@@ -67,23 +77,29 @@ class d3_dev_d3inquiry extends d3_dev_d3inquiry_parent
 
     /**
      * @return oxBasket
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
      */
     public function getBasket()
     {
         $oBasket = parent::getBasket();
 
-        if (false == $oBasket && oxRegistry::getConfig()->getActiveView()->getClassName() == 'd3dev') {
+        if (false == $oBasket && Registry::getConfig()->getActiveView()->getClassKey() == 'd3dev') {
             $oBasket = $this->d3DevGetOrderBasket();
         }
 
         return $oBasket;
     }
-    
+
+    /**
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
+     */
     protected function _d3AddVouchers()
     {
-        $sSelect = "SELECT oxid FROM oxvouchers WHERE oxorderid = ".oxDb::getDb(oxDb::FETCH_MODE_ASSOC)->quote($this->getId()).";";
-        
-        $aResult = oxDb::getDb(oxDb::FETCH_MODE_ASSOC)->getArray($sSelect);
+        $sSelect = "SELECT oxid FROM oxvouchers WHERE oxorderid = ". DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->quote($this->getId()).";";
+
+        $aResult = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getAll($sSelect);
 
         foreach ($aResult as $aFields) {
             $oVoucher = oxNew('oxvoucher');
@@ -97,11 +113,14 @@ class d3_dev_d3inquiry extends d3_dev_d3inquiry_parent
      *
      * @param bool $blStockCheck perform stock check or not (default true)
      *
-     * @return oxBasket
+     * @return \OxidEsales\Eshop\Application\Model\Basket
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
      */
     protected function _getInquiryBasket($blStockCheck = true)
     {
-        $this->_oOrderBasket = oxNew("oxBasket");
+        /** @var \OxidEsales\Eshop\Application\Model\Basket _oOrderBasket */
+        $this->_oOrderBasket = oxNew(\OxidEsales\Eshop\Application\Model\Basket::class);
         $this->_oOrderBasket->enableSaveToDataBase(false);
 
         //setting recalculation mode
@@ -117,7 +136,7 @@ class d3_dev_d3inquiry extends d3_dev_d3inquiry_parent
         $this->_oOrderBasket->setInquiryId($this->getId());
 
         // setting basket currency order uses
-        $aCurrencies = $this->getConfig()->getCurrencyArray();
+        $aCurrencies = Registry::getConfig()->getCurrencyArray();
         foreach ($aCurrencies as $oCur) {
             if ($oCur->name == $this->oxorder__oxcurrency->value) {
                 $oBasketCur = $oCur;
@@ -133,7 +152,7 @@ class d3_dev_d3inquiry extends d3_dev_d3inquiry_parent
         $this->_oOrderBasket->setCardMessage($this->oxorder__oxcardtext->value);
 
         if ($this->_blReloadDiscount) {
-            $oDb = oxDb::getDb(oxDb::FETCH_MODE_ASSOC);
+            $oDb = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC);
             // disabling availability check
             $this->_oOrderBasket->setSkipVouchersChecking(true);
 

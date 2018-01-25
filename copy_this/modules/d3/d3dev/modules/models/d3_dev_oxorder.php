@@ -1,5 +1,9 @@
 <?php
- /**
+
+use OxidEsales\Eshop\Core\DatabaseProvider;
+use OxidEsales\Eshop\Core\Registry;
+
+/**
  * This Software is the property of Data Development and is protected
  * by copyright law - it is NOT Freeware.
  *
@@ -25,8 +29,10 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
         $oBasket = $this->_getOrderBasket();
 
         // unsetting bundles
+        /** @var \OxidEsales\Eshop\Core\Model\ListModel $oOrderArticles */
         $oOrderArticles = $this->getOrderArticles();
         foreach ($oOrderArticles as $sItemId => $oItem) {
+            /** @var $oItem \OxidEsales\Eshop\Application\Model\OrderArticle */
             if ($oItem->isBundle()) {
                 $oOrderArticles->offsetUnset($sItemId);
             }
@@ -45,20 +51,25 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
 
     /**
      * @return string
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
      */
     public function d3getLastOrderId()
     {
-        if (oxRegistry::getConfig()->getRequestParameter('d3ordernr')) {
-            $sWhere = ' oxordernr = ' . (int) oxRegistry::getConfig()->getRequestParameter('d3ordernr');
-        } else {
-            $sWhere = 1;
+        $orderNr = (int) oxNew(\OxidEsales\Eshop\Core\Request::class)->getRequestParameter('d3ordernr');
+        $sWhere = 1;
+        if ($orderNr) {
+            $sWhere = ' oxordernr = ' . $orderNr;
         }
 
         $sSelect = "SELECT oxid FROM ".getViewName('oxorder')." WHERE ".$sWhere." ORDER BY oxorderdate DESC LIMIT 1";
 
-        return oxDb::getDb(oxDb::FETCH_MODE_ASSOC)->getOne($sSelect);
+        return DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getOne($sSelect);
     }
 
+    /**
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
+     */
     public function d3getLastOrder()
     {
         $this->load($this->d3getLastOrderId());
@@ -66,27 +77,31 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
     }
 
     /**
-     * @return oxBasket
+     * @return d3_dev_oxbasket|\OxidEsales\Eshop\Application\Model\Basket
      */
     public function getBasket()
     {
         $oBasket = parent::getBasket();
 
-        if (false == $oBasket && oxRegistry::getConfig()->getActiveView()->getClassName() == 'd3dev') {
+        if (false == $oBasket && Registry::getConfig()->getActiveView()->getClassKey() == 'd3dev') {
             $oBasket = $this->d3DevGetOrderBasket();
         }
 
         return $oBasket;
     }
-    
+
+    /**
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
+     */
     protected function _d3AddVouchers()
     {
-        $sSelect = "SELECT oxid FROM oxvouchers WHERE oxorderid = ".oxDb::getDb(oxDb::FETCH_MODE_ASSOC)->quote($this->getId()).";";
-        
-        $aResult = oxDb::getDb(oxDb::FETCH_MODE_ASSOC)->getArray($sSelect);
+        $sSelect = "SELECT oxid FROM oxvouchers WHERE oxorderid = ".DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->quote($this->getId()).";";
+
+        $aResult = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getAll($sSelect);
 
         foreach ($aResult as $aFields) {
-            $oVoucher = oxNew('oxvoucher');
+            $oVoucher = oxNew(\OxidEsales\Eshop\Application\Model\Voucher::class);
             $oVoucher->load($aFields['oxid']);
             $this->_aVoucherList[$oVoucher->getId()] = $oVoucher;
         }

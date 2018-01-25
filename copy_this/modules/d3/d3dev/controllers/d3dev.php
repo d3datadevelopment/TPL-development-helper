@@ -71,6 +71,10 @@ class d3dev extends \OxidEsales\EshopProfessional\Application\Controller\Fronten
         }
     }
 
+    /**
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
+     */
     public function showOrderMailContent()
     {
         header('Content-type: text/html; charset='.Registry::getLang()->translateString('charset'));
@@ -93,6 +97,9 @@ class d3dev extends \OxidEsales\EshopProfessional\Application\Controller\Fronten
         die();
     }
 
+    /**
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     */
     public function showInquiryMailContent()
     {
         if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value
