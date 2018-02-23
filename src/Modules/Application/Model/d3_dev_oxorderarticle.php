@@ -10,16 +10,18 @@
  * http://www.shopmodule.com
  *
  * @copyright © D³ Data Development, Thomas Dartsch
- * @author    D³ Data Development - Daniel Seifert <ds@shopmodule.com>
+ * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
  * @link      http://www.oxidmodule.com
  */
 
 namespace D3\Devhelper\Modules\Application\Model;
 
+use OxidEsales\Eshop\Application\Model\ArticleList;
+
 class d3_dev_oxorderarticle extends d3_dev_oxorderarticle_parent
 {
     /**
-     * @return null|\OxidEsales\EshopCommunity\Application\Model\ArticleList
+     * @return null|ArticleList
      */
     public function getCustomerAlsoBoughtThisProducts()
     {

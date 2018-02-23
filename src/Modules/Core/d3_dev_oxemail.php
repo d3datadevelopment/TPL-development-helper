@@ -2,6 +2,7 @@
 
 namespace D3\Devhelper\Modules\Core;
 
+use D3\Devhelper\Modules\Application\Model as ModuleModel;
 use OxidEsales\Eshop\Core\Registry;
 
 /**
@@ -15,22 +16,20 @@ use OxidEsales\Eshop\Core\Registry;
  * http://www.shopmodule.com
  *
  * @copyright © D³ Data Development, Thomas Dartsch
- * @author    D³ Data Development - Daniel Seifert <ds@shopmodule.com>
+ * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
  * @link      http://www.oxidmodule.com
  */
 
 class d3_dev_oxemail extends d3_dev_oxemail_parent
 {
     /**
-     * @param d3_dev_oxorder $oOrder
-     *
+     * @param ModuleModel\d3_dev_oxorder $oOrder
      * @param                $sType
-     *
      * @return mixed|string
      */
     public function d3GetOrderMailContent($oOrder, $sType)
     {
-        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+        if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
             return '';
         }
 
@@ -64,7 +63,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
         // send confirmation to shop owner
         // send not pretending from order user, as different email domain rise spam filters
-        $this->setFrom($oShop->oxshops__oxowneremail->value);
+        $this->setFrom($oShop->getFieldData('oxowneremail'));
 
         $oLang = Registry::getLang();
         $iOrderLang = $oLang->getObjectTplLanguage();
@@ -78,7 +77,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $this->setSmtp($oShop);
 
         // create messages
-        /** @var Smarty $oSmarty */
+        /** @var \Smarty $oSmarty */
         $oSmarty = $this->_getSmarty();
         $this->setViewData("order", $oOrder);
 
@@ -89,7 +88,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
     }
 
     /**
-     * @param d3_dev_d3inquiry $oInquiry
+     * @param ModuleModel\d3_dev_d3inquiry $oInquiry
      *
      * @param                  $sType
      *
@@ -97,7 +96,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
      */
     public function d3GetInquiryMailContent($oInquiry, $sType)
     {
-        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+        if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
             return '';
         }
 
@@ -131,7 +130,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
         // send confirmation to shop owner
         // send not pretending from order user, as different email domain rise spam filters
-        $this->setFrom($oShop->oxshops__oxowneremail->value);
+        $this->setFrom($oShop->getFieldData('oxowneremail'));
 
         $oLang = Registry::getLang();
         $iOrderLang = $oLang->getObjectTplLanguage();
@@ -145,7 +144,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $this->setSmtp($oShop);
 
         // create messages
-        /** @var Smarty $oSmarty */
+        /** @var \Smarty $oSmarty */
         $oSmarty = $this->_getSmarty();
         $this->setViewData("inquiry", $oInquiry);
 
@@ -157,7 +156,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     protected function _sendMail()
     {
-        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+        if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
             return parent::_sendMail();
         }
 
@@ -188,7 +187,6 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
                 }
             }
         }
-
         $this->_aRecipients = $aRecipients;
     }
 

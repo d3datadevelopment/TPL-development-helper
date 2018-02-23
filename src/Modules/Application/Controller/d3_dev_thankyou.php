@@ -3,7 +3,15 @@
 namespace D3\Devhelper\Modules\Application\Controller;
 
 // .../?cl=thankyou[&d3orderid=23]
+use D3\Devhelper\Modules\Application\Model\d3_dev_d3inquiry;
+use D3\Devhelper\Modules\Application\Model\d3_dev_oxorder;
+use OxidEsales\Eshop\Application\Model\Order;
+use OxidEsales\Eshop\Application\Model\User;
+use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
+use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
+use OxidEsales\Eshop\Core\Exception\UserException;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\Eshop\Core\Request;
 
 /**
  * This Software is the property of Data Development and is protected
@@ -16,17 +24,15 @@ use OxidEsales\Eshop\Core\Registry;
  * http://www.shopmodule.com
  *
  * @copyright © D³ Data Development, Thomas Dartsch
- * @author    D³ Data Development - Daniel Seifert <ds@shopmodule.com>
+ * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
  * @link      http://www.oxidmodule.com
  */
 
 class d3_dev_thankyou extends d3_dev_thankyou_parent
 {
     /**
-     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
-     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
-     * @throws object
-     * @throws oxUserException
+     * @throws DatabaseConnectionException
+     * @throws DatabaseErrorException
      */
     public function init()
     {
@@ -36,8 +42,8 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
 
         Registry::getSession()->setVariable('sess_challenge', $sSessChallenge);
 
-        if (oxNew(\OxidEsales\Eshop\Core\Request::class)->getRequestParameter('d3dev')
-            && false == (bool) Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value
+        if (Registry::get(Request::class)->getRequestEscapedParameter("d3dev")
+            && false == (bool) Registry::getConfig()->getActiveShop()->isProductiveMode()
             && Registry::getConfig()->getConfigParam('blD3DevShowThankyou')
         ) {
             $this->_d3authenticate();
@@ -47,17 +53,11 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
         }
     }
 
-    /**
-     * @throws object
-     * @throws oxUserException
-     */
     protected function _d3authenticate ()
     {
-        $request = oxNew(\OxidEsales\Eshop\Core\Request::class);
-
         try {
-            $sUser = $request->getRequestParameter( 'usr' );
-            $sPassword = $request->getRequestParameter( 'pwd' );
+            $sUser = Registry::get(Request::class)->getRequestEscapedParameter( 'usr');
+            $sPassword = Registry::get(Request::class)->getRequestEscapedParameter('pwd');
 
             if ( !$sUser || !$sPassword ) {
                 $sUser = $_SERVER[ 'PHP_AUTH_USER' ];
@@ -80,17 +80,17 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
                     }
                 }
             }
-            /** @var \OxidEsales\Eshop\Application\Model\User $oUser */
-            $oUser = oxNew( \OxidEsales\Eshop\Application\Model\User::class );
+            /** @var User $oUser */
+            $oUser = oxNew(User::class);
             if ( !$sUser || !$sPassword || !$oUser->login( $sUser, $sPassword ) ) {
-                /** @var \OxidEsales\Eshop\Core\Exception\UserException $oEx */
-                $oEx = oxNew( \OxidEsales\Eshop\Core\Exception\UserException::class, 'EXCEPTION_USER_NOVALIDLOGIN');
+                /** @var UserException $oEx */
+                $oEx = oxNew(UserException::class, 'EXCEPTION_USER_NOVALIDLOGIN');
                 throw $oEx;
             }
         }
-        catch ( Exception $oEx ) {
+        catch ( \Exception $oEx ) {
             $oShop = Registry::getConfig()->getActiveShop();
-            header( 'WWW-Authenticate: Basic realm="' . $oShop->oxshops__oxname->value . '"' );
+            header( 'WWW-Authenticate: Basic realm="{' . $oShop->getFieldData('oxname') . '"' );
             header( 'HTTP/1.0 401 Unauthorized' );
             exit( 1 );
         }
@@ -98,17 +98,17 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
 
     /**
      * @return bool|d3_dev_oxorder
-     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
-     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
+     * @throws DatabaseConnectionException
+     * @throws DatabaseErrorException
      */
     public function d3GetLastOrder()
     {
-        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+        if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
             return false;
         }
 
         /** @var d3_dev_oxorder $oOrder */
-        $oOrder = oxNew(\OxidEsales\Eshop\Application\Model\Order::class);
+        $oOrder = oxNew(Order::class);
         $oOrder->d3getLastOrder();
 
         return $oOrder;
@@ -116,11 +116,11 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
 
     /**
      * @return bool|d3_dev_d3inquiry
-     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     * @throws DatabaseConnectionException
      */
     public function d3GetLastInquiry()
     {
-        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value) {
+        if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
             return false;
         }
 

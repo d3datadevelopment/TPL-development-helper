@@ -15,7 +15,7 @@ use OxidEsales\Eshop\Core\Registry;
  * http://www.shopmodule.com
  *
  * @copyright © D³ Data Development, Thomas Dartsch
- * @author    D³ Data Development - Daniel Seifert <ds@shopmodule.com>
+ * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
  * @link      http://www.oxidmodule.com
  */
 
@@ -23,7 +23,7 @@ class d3_dev_oxbasket extends d3_dev_oxbasket_parent
 {
     public function deleteBasket()
     {
-        if (Registry::getConfig()->getActiveShop()->oxshops__oxproductive->value
+        if (Registry::getConfig()->getActiveShop()->isProductiveMode()
             || false == Registry::getConfig()->getConfigParam('blD3DevAvoidDelBasket')
         ) {
             parent::deleteBasket();

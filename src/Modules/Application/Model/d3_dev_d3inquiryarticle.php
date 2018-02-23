@@ -10,16 +10,18 @@
  * http://www.shopmodule.com
  *
  * @copyright © D³ Data Development, Thomas Dartsch
- * @author    D³ Data Development - Daniel Seifert <ds@shopmodule.com>
+ * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
  * @link      http://www.oxidmodule.com
  */
 
 namespace D3\Devhelper\Modules\Application\Model;
 
+use OxidEsales\Eshop\Application\Model\ArticleList;
+
 class d3_dev_d3inquiryarticle extends d3_dev_d3inquiryarticle_parent
 {
     /**
-     * @return array
+     * @return null|ArticleList
      */
     public function getCustomerAlsoBoughtThisProducts()
     {
@@ -35,6 +37,6 @@ class d3_dev_d3inquiryarticle extends d3_dev_d3inquiryarticle_parent
      */
     public function isBundle()
     {
-        return ( bool ) $this->d3inquiryarticles__oxisbundle->value;
+        return ( bool ) $this->getFieldData('oxisbundle');
     }
 }

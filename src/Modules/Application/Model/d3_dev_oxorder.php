@@ -2,8 +2,14 @@
 
 namespace D3\Devhelper\Modules\Application\Model;
 
+use OxidEsales\Eshop\Application\Model\OrderArticle;
+use OxidEsales\Eshop\Application\Model\Voucher;
 use OxidEsales\Eshop\Core\DatabaseProvider;
+use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
+use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
+use OxidEsales\Eshop\Core\Model\ListModel;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\Eshop\Core\Request;
 
 /**
  * This Software is the property of Data Development and is protected
@@ -16,7 +22,7 @@ use OxidEsales\Eshop\Core\Registry;
  * http://www.shopmodule.com
  *
  * @copyright © D³ Data Development, Thomas Dartsch
- * @author    D³ Data Development - Daniel Seifert <ds@shopmodule.com>
+ * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
  * @link      http://www.oxidmodule.com
  */
 
@@ -31,10 +37,10 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
         $oBasket = $this->_getOrderBasket();
 
         // unsetting bundles
-        /** @var \OxidEsales\Eshop\Core\Model\ListModel $oOrderArticles */
+        /** @var ListModel $oOrderArticles */
         $oOrderArticles = $this->getOrderArticles();
         foreach ($oOrderArticles as $sItemId => $oItem) {
-            /** @var $oItem \OxidEsales\Eshop\Application\Model\OrderArticle */
+            /** @var $oItem OrderArticle */
             if ($oItem->isBundle()) {
                 $oOrderArticles->offsetUnset($sItemId);
             }
@@ -53,11 +59,11 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
 
     /**
      * @return string
-     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     * @throws DatabaseConnectionException
      */
     public function d3getLastOrderId()
     {
-        $orderNr = (int) oxNew(\OxidEsales\Eshop\Core\Request::class)->getRequestParameter('d3ordernr');
+        $orderNr = (int) Registry::get(Request::class)->getRequestEscapedParameter('d3ordernr');
         $sWhere = 1;
         if ($orderNr) {
             $sWhere = ' oxordernr = ' . $orderNr;
@@ -69,8 +75,8 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
     }
 
     /**
-     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
-     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
+     * @throws DatabaseConnectionException
+     * @throws DatabaseErrorException
      */
     public function d3getLastOrder()
     {
@@ -93,8 +99,8 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
     }
 
     /**
-     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
-     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
+     * @throws DatabaseConnectionException
+     * @throws DatabaseErrorException
      */
     protected function _d3AddVouchers()
     {
@@ -103,7 +109,7 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
         $aResult = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getAll($sSelect);
 
         foreach ($aResult as $aFields) {
-            $oVoucher = oxNew(\OxidEsales\Eshop\Application\Model\Voucher::class);
+            $oVoucher = oxNew(Voucher::class);
             $oVoucher->load($aFields['oxid']);
             $this->_aVoucherList[$oVoucher->getId()] = $oVoucher;
         }

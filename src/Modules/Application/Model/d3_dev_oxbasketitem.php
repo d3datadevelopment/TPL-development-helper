@@ -10,7 +10,7 @@
  * http://www.shopmodule.com
  *
  * @copyright © D³ Data Development, Thomas Dartsch
- * @author    D³ Data Development - Daniel Seifert <ds@shopmodule.com>
+ * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
  * @link      http://www.oxidmodule.com
  */
 
@@ -25,16 +25,16 @@ class d3_dev_oxbasketitem extends d3_dev_oxbasketitem_parent
 
     /**
      * @return string
-     * @throws \OxidEsales\EshopCommunity\Application\Model\oxArticleException
-     * @throws \OxidEsales\Eshop\Core\Exception\StandardException
-     * @throws oxNoArticleException
+     * @throws \OxidEsales\Eshop\Core\Exception\ArticleException
+     * @throws \OxidEsales\Eshop\Core\Exception\ArticleInputException
+     * @throws \OxidEsales\Eshop\Core\Exception\NoArticleException
      */
     public function getTitle()
     {
         $oArticle = $this->getArticle();
-        $this->_sTitle = $oArticle->oxarticles__oxtitle->value;
+        $this->_sTitle = $oArticle->getFieldData('oxtitle');
 
-        if ($oArticle->oxarticles__oxvarselect->value) {
+        if ($oArticle->getFieldData('oxvarselect')) {
             $this->_sTitle = $this->_sTitle . ', ' . $this->getVarSelect();
         }
 
