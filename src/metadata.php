@@ -4,7 +4,7 @@ use OxidEsales\Eshop\Core\Registry;
 /**
  * Metadata version
  */
-$sMetadataVersion = '1.1';
+$sMetadataVersion = '2.0';
 
 $sStyle = class_exists('d3dev') ? "background-color: darkred; color: white; padding: 0 10px;" : "";
 
@@ -59,8 +59,8 @@ $aModule = array(
         'oxbasket'  => 'd3/d3dev/modules/models/d3_dev_oxbasket',
         'oxbasketitem'  => 'd3/d3dev/modules/models/d3_dev_oxbasketitem',
     ),
-    'files'       => array(
-        'd3dev'     => 'd3/d3dev/controllers/d3dev.php',
+    'controllers'       => array(
+        'd3dev'     => \D3\Devhelper\Application\Controller\d3dev,
     ),
     'templates'   => array(
     ),

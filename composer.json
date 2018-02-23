@@ -1,0 +1,41 @@
+{
+  "name": "d3/devhelper",
+  "description": "Manipulate shop standard processes for easier development",
+  "type": "oxideshop-module",
+  "keywords": [
+    "oxid",
+    "modules",
+    "eShop",
+    "d3",
+    "devhelper",
+    "developer",
+    "development",
+    "tools"
+  ],
+  "authors": [
+    {
+        "name": "D3 Data Development (Inh. Thomas Dartsch)",
+        "email": "info@shopmodule.com",
+        "homepage": "http://www.d3data.de"
+    }
+  ],
+  "homepage": "https://www.oxidmodule.com/",
+  "license": [
+    "proprietary"
+  ],
+  "extra": {
+    "oxideshop": {
+      "source-directory": "/src",
+      "target-directory": "d3/devhelper"
+    }
+  },
+  "require": {
+    "php": ">=5.6",
+    "oxid-esales/oxideshop-ce": "6.0 - 6.1",
+  },
+  "autoload": {
+    "psr-4": {
+      "D3\\Devhelper\\": "../../../source/modules/d3/devhelper"
+    }
+  }
+}
