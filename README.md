@@ -1,4 +1,13 @@
 # TPL Development Helper
+
+## Installation
+
+    composer config repositories.d3/devhelper vcs https://github.com/d3datadevelopment/TPL-development-helper/
+    
+    composer require d3/devhelper
+
+## Features
+    
 ### Entwicklungswerkzeug zur Kontrolle schwer zugänglicher Shopinhalte
 
 Diese Tool soll bei täglichen Entwicklungsaufgaben im OXID eShop helfen, die (systembedingt) vom Shopsystem erschwert werden.
@@ -10,21 +19,25 @@ Diese Tool soll bei täglichen Entwicklungsaufgaben im OXID eShop helfen, die (sy
 * Thankyou-Seite ist auch ohne Bestellabschluss aufrufbar (unter Angabe der Bestellnummer auch für eine bestimmte Bestellung)
 * Bestellbestätigungsmails und sind im Browser darstellbar (unter Angabe der Bestellnummer auch für eine bestimmte Bestellung)
 
-__Da hiermit gezielt Mails der Shopbestellungen angezeigt werden können, ist das Modul mit äußerster Vorsicht zu verwenden. Die Hürden für die Anzeige der Mails sind daher absichtlich sehr hoch gesetzt. Vor der Verwendung sind Einstellungen zu ändern. Denken Sie unbedingt daran, diese Einstellungen im Anschluss wieder zurückzusetzen. Sonst sind Kunden- und Bestelldaten frei abrufbar. Wir übernehmen für daraus resultierenden Schäden keine Haftung.__
+## Sicherheitshinweis
+
+    Da hiermit gezielt Mails der Shopbestellungen angezeigt werden können, ist das Modul mit äußerster Vorsicht zu verwenden. Die Hürden für die Anzeige der Mails sind daher absichtlich sehr hoch gesetzt. Vor der Verwendung sind Einstellungen zu ändern. Denken Sie unbedingt daran, diese Einstellungen im Anschluss wieder zurückzusetzen. Sonst sind Kunden- und Bestelldaten frei abrufbar. Wir übernehmen für daraus resultierenden Schäden keine Haftung.
+
+## Verwendung
 
 Um unser Tool verwenden zu können, folgen Sie bitte diesen Schritten:
 
 1. Produktivmodus entfernen
 
-   ![Adminbereich -> Stammdaten -> Grundeinstellungen -> Haken bei Produktivmodus entfernen](step1.jpg "Produktivmodus entfernen")
+   ![Adminbereich -> Stammdaten -> Grundeinstellungen -> Haken bei Produktivmodus entfernen](docs/step1.jpg "Produktivmodus entfernen")
 
 2. Modul aktivieren
 
-   ![Adminbereich -> Erweiterungen -> Module -> TPL Development Tool -> Aktivieren](step2.jpg "Modul aktivieren")
+   ![Adminbereich -> Erweiterungen -> Module -> TPL Development Tool -> Aktivieren](docs/step2.jpg "Modul aktivieren")
    
 3. In den Einstellungen die gewünschten Funktionen freischalten
 
-   ![Adminbereich -> Erweiterungen -> Module -> TPL Development Tool -> Einstell.](step3.jpg "gewünschte Funktionen freischalten")
+   ![Adminbereich -> Erweiterungen -> Module -> TPL Development Tool -> Einstell.](docs/step3.jpg "gewünschte Funktionen freischalten")
    
 4. Über die Links im Tab „Stamm“ können Sie die betreffenden Seiten aufrufen. Vor der Darstellung wird ein Benutzername und Passwort abgefragt. Hierfür verwenden Sie die Anmeldedaten des Abminbereichs Ihres Shops.
 
