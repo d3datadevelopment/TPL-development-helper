@@ -1,5 +1,7 @@
 <?php
 
+namespace D3\Devhelper\Modules\Application\Controller;
+
 // .../?cl=thankyou[&d3orderid=23]
 use OxidEsales\Eshop\Core\Registry;
 

@@ -1,5 +1,8 @@
 <?php
 
+namespace D3\Devhelper\Application\Controller;
+
+use OxidEsales\Eshop\Application\Controller\FrontendController;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\Eshop\Core\Request;
 
@@ -18,7 +21,7 @@ use OxidEsales\Eshop\Core\Request;
  * @link      http://www.oxidmodule.com
  */
 
-class d3dev extends \OxidEsales\EshopProfessional\Application\Controller\FrontendController
+class d3dev extends FrontendController
 {
     public function init()
     {

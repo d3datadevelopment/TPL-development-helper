@@ -1,5 +1,7 @@
 <?php
 
+namespace D3\Devhelper\Modules\Core;
+
 use OxidEsales\Eshop\Core\Registry;
 
 /**

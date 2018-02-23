@@ -14,6 +14,8 @@
  * @link      http://www.oxidmodule.com
  */
 
+namespace D3\Devhelper\Modules\Application\Model;
+
 class d3_dev_oxbasketitem extends d3_dev_oxbasketitem_parent
 {
     public function d3ClearArticle()

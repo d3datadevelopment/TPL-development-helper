@@ -14,6 +14,8 @@
  * @link      http://www.oxidmodule.com
  */
 
+namespace D3\Devhelper\Modules\Application\Model;
+
 class d3_dev_oxorderarticle extends d3_dev_oxorderarticle_parent
 {
     /**

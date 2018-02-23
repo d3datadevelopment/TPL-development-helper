@@ -1,4 +1,11 @@
 <?php
+
+use D3\Devhelper\Modules\Core as ModuleCore;
+use D3\Devhelper\Modules\Application\Controller as ModuleController;
+use D3\Devhelper\Modules\Application\Model as ModuleModel;
+use OxidEsales\Eshop\Application\Controller as OxidController;
+use OxidEsales\Eshop\Application\Model as OxidModel;
+use OxidEsales\Eshop\Core as OxidCore;
 use OxidEsales\Eshop\Core\Registry;
 
 /**
@@ -47,20 +54,20 @@ $aModule = array(
             '* Ordernummer an URL erg&auml;nzen, wenn bestimmte Bestellungen angezeigt werden sollen',
         'en'    => ''),
     // 'thumbnail'    => 'picture.png',
-    'version'      => '1.2.0.0',
+    'version'      => '2.0.0.0',
     'author'       => 'D&sup3; Data Development (Inh.: Thomas Dartsch)',
     'email'        => 'support@shopmodule.com',
     'url'          => 'http://www.oxidmodule.com/',
     'extend'      => array(
-        'thankyou'  => 'd3/d3dev/modules/controllers/d3_dev_thankyou',
-        'oxorder'   => 'd3/d3dev/modules/models/d3_dev_oxorder',
-        'oxorderarticle'   => 'd3/d3dev/modules/models/d3_dev_oxorderarticle',
-        'oxemail'   => 'd3/d3dev/modules/models/d3_dev_oxemail',
-        'oxbasket'  => 'd3/d3dev/modules/models/d3_dev_oxbasket',
-        'oxbasketitem'  => 'd3/d3dev/modules/models/d3_dev_oxbasketitem',
+        OxidController\ThankYouController::class    => ModuleController\d3_dev_thankyou::class,
+        OxidModel\Order::class                      => ModuleModel\d3_dev_oxorder::class,
+        OxidModel\OrderArticle::class               => ModuleModel\d3_dev_oxorderarticle::class,
+        OxidCore\Email::class                       => ModuleCore\d3_dev_oxemail::class,
+        OxidModel\Basket::class                     => ModuleModel\d3_dev_oxbasket::class,
+        OxidModel\BasketItem::class                 => ModuleModel\d3_dev_oxbasketitem::class,
     ),
     'controllers'       => array(
-        'd3dev'     => \D3\Devhelper\Application\Controller\d3dev,
+        'd3dev'     => \D3\Devhelper\Application\Controller\d3dev::class,
     ),
     'templates'   => array(
     ),
@@ -104,6 +111,6 @@ $aModule = array(
 
 
 if (class_exists('d3inquiry')) {
-    $aModule['extend']['d3inquiry']  = 'd3/d3dev/modules/models/d3_dev_d3inquiry';
-    $aModule['extend']['d3inquiryarticle']  = 'd3/d3dev/modules/models/d3_dev_d3inquiryarticle';
+    $aModule['extend']['d3inquiry']  = ModuleModel\d3_dev_d3inquiry::class;
+    $aModule['extend']['d3inquiryarticle']  = ModuleModel\d3_dev_d3inquiryarticle::class;
 }

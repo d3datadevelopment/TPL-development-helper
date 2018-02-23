@@ -1,5 +1,7 @@
 <?php
 
+namespace D3\Devhelper\Modules\Application\Model;
+
 use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Registry;
 
