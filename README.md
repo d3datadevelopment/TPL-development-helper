@@ -2,7 +2,7 @@
 
 ## Installation
 
-    composer config repositories.d3/devhelper vcs https://github.com/d3datadevelopment/TPL-development-helper/
+    composer config repositories.d3 composer https://satis.oxidmodule.com
     
     composer require d3/devhelper
 
