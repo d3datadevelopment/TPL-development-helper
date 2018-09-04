@@ -39,7 +39,7 @@ Um unser Tool verwenden zu können, folgen Sie bitte diesen Schritten:
 
    ![Adminbereich -> Erweiterungen -> Module -> TPL Development Tool -> Einstell.](docs/step3.jpg "gewünschte Funktionen freischalten")
    
-4. Über die Links im Tab „Stamm“ können Sie die betreffenden Seiten aufrufen. Vor der Darstellung wird ein Benutzername und Passwort abgefragt. Hierfür verwenden Sie die Anmeldedaten des Abminbereichs Ihres Shops.
+4. Über die Links im Tab „Stamm“ können Sie die betreffenden Seiten aufrufen. Vor der Darstellung wird ein Benutzername und Passwort abgefragt. Hierfür verwenden Sie die Anmeldedaten des Adminbereichs Ihres Shops.
 
 5. An den E-Mail- und Thankyou-Links gibt es einen leeren Parameter, den Sie bei Bedarf mit einer Bestellnummer füllen können. Dann wird statt der letzten Bestellung ganz gezielt eine andere Bestellung zur Darstellung verwendet.
 
