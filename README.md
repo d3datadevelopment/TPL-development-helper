@@ -2,8 +2,6 @@
 
 ## Installation
 
-    composer config repositories.d3 composer https://satis.oxidmodule.com
-    
     composer require d3/devhelper
 
 ## Features
@@ -21,7 +19,7 @@ Diese Tool soll bei täglichen Entwicklungsaufgaben im OXID eShop helfen, die (sy
 
 ## Sicherheitshinweis
 
-    Da hiermit gezielt Mails der Shopbestellungen angezeigt werden können, ist das Modul mit äußerster Vorsicht zu verwenden. Die Hürden für die Anzeige der Mails sind daher absichtlich sehr hoch gesetzt. Vor der Verwendung sind Einstellungen zu ändern. Denken Sie unbedingt daran, diese Einstellungen im Anschluss wieder zurückzusetzen. Sonst sind Kunden- und Bestelldaten frei abrufbar. Wir übernehmen für daraus resultierenden Schäden keine Haftung.
+    Da hiermit gezielt Mails der Shopbestellungen angezeigt werden können, ist das Modul mit entsprechender Vorsicht zu verwenden. Die Hürden für die Anzeige der Mails sind daher absichtlich sehr hoch gesetzt. Vor der Verwendung sind Einstellungen zu ändern. Denken Sie unbedingt daran, diese Einstellungen im Anschluss wieder zurückzusetzen. Sonst sind Kunden- und Bestelldaten frei abrufbar. Wir übernehmen für daraus resultierenden Schäden keine Haftung.
 
 ## Verwendung
 
