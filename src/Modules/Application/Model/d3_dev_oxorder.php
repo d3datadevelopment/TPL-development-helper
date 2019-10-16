@@ -1,16 +1,5 @@
 <?php
 
-namespace D3\Devhelper\Modules\Application\Model;
-
-use OxidEsales\Eshop\Application\Model\OrderArticle;
-use OxidEsales\Eshop\Application\Model\Voucher;
-use OxidEsales\Eshop\Core\DatabaseProvider;
-use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
-use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
-use OxidEsales\Eshop\Core\Model\ListModel;
-use OxidEsales\Eshop\Core\Registry;
-use OxidEsales\Eshop\Core\Request;
-
 /**
  * This Software is the property of Data Development and is protected
  * by copyright law - it is NOT Freeware.
@@ -26,6 +15,16 @@ use OxidEsales\Eshop\Core\Request;
  * @link      http://www.oxidmodule.com
  */
 
+namespace D3\Devhelper\Modules\Application\Model;
+
+use OxidEsales\Eshop\Application\Model\Voucher;
+use OxidEsales\Eshop\Core\DatabaseProvider;
+use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
+use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
+use OxidEsales\Eshop\Core\Model\ListModel;
+use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\Eshop\Core\Request;
+
 class d3_dev_oxorder extends d3_dev_oxorder_parent
 {
     /**
@@ -36,18 +35,9 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
         /** @var d3_dev_oxbasket $oBasket */
         $oBasket = $this->_getOrderBasket();
 
-        // unsetting bundles
-        /** @var ListModel $oOrderArticles */
-        $oOrderArticles = $this->getOrderArticles();
-        foreach ($oOrderArticles as $sItemId => $oItem) {
-            /** @var $oItem OrderArticle */
-            if ($oItem->isBundle()) {
-                $oOrderArticles->offsetUnset($sItemId);
-            }
-        }
-
         // add this order articles to basket and recalculate basket
-        $this->_addOrderArticlesToBasket($oBasket, $oOrderArticles);
+        $this->_d3AddOrderArticlesToBasket($oBasket, $this->getOrderArticles());
+
         // recalculating basket
         $oBasket->calculateBasket(true);
         $oBasket->d3ClearBasketItemArticles();
@@ -66,7 +56,7 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
         $orderNr = (int) Registry::get(Request::class)->getRequestEscapedParameter('d3ordernr');
         $sWhere = 1;
         if ($orderNr) {
-            $sWhere = ' oxordernr = ' . $orderNr;
+            $sWhere = ' oxordernr = ' . DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->quote($orderNr);
         }
 
         $sSelect = "SELECT oxid FROM ".getViewName('oxorder')." WHERE ".$sWhere." ORDER BY oxorderdate DESC LIMIT 1";
@@ -112,6 +102,23 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
             $oVoucher = oxNew(Voucher::class);
             $oVoucher->load($aFields['oxid']);
             $this->_aVoucherList[$oVoucher->getId()] = $oVoucher;
+        }
+    }
+
+    /**
+     * Adds order articles back to virtual basket. Needed for recalculating order.
+     *
+     * @param d3_dev_oxbasket $oBasket        basket object
+     * @param ListModel                                      $aOrderArticles order articles
+     */
+    protected function _d3AddOrderArticlesToBasket($oBasket, $aOrderArticles)
+    {
+        // if no order articles, return empty basket
+        if (count($aOrderArticles) > 0) {
+            //adding order articles to basket
+            foreach ($aOrderArticles as $oOrderArticle) {
+                $oBasket->d3addOrderArticleToBasket($oOrderArticle);
+            }
         }
     }
 }

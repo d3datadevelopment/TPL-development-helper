@@ -16,6 +16,12 @@
 
 namespace D3\Devhelper\Modules\Application\Model;
 
+use OxidEsales\Eshop\Application\Model\Article;
+use OxidEsales\Eshop\Application\Model\OrderArticle;
+use OxidEsales\Eshop\Core\Exception\ArticleException;
+use OxidEsales\Eshop\Core\Exception\ArticleInputException;
+use OxidEsales\Eshop\Core\Exception\NoArticleException;
+
 class d3_dev_oxbasketitem extends d3_dev_oxbasketitem_parent
 {
     public function d3ClearArticle()
@@ -25,9 +31,9 @@ class d3_dev_oxbasketitem extends d3_dev_oxbasketitem_parent
 
     /**
      * @return string
-     * @throws \OxidEsales\Eshop\Core\Exception\ArticleException
-     * @throws \OxidEsales\Eshop\Core\Exception\ArticleInputException
-     * @throws \OxidEsales\Eshop\Core\Exception\NoArticleException
+     * @throws ArticleException
+     * @throws ArticleInputException
+     * @throws NoArticleException
      */
     public function getTitle()
     {
@@ -39,5 +45,20 @@ class d3_dev_oxbasketitem extends d3_dev_oxbasketitem_parent
         }
 
         return $this->_sTitle;
+    }
+
+    /**
+     * @throws \oxArticleInputException
+     * @throws \oxNoArticleException
+     */
+    public function d3ConvertToArticleObject()
+    {
+        $oEmbeddedArticle = $this->getArticle();
+
+        if ($oEmbeddedArticle instanceof OrderArticle) {
+            $oArticle = oxNew(Article::class);
+            $oArticle->load($oEmbeddedArticle->getFieldData('oxartid'));
+            $this->_oArticle = $oArticle;
+        }
     }
 }
