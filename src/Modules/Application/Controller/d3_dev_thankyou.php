@@ -40,7 +40,12 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
 
         parent::init();
 
-        Registry::getSession()->setVariable('sess_challenge', $sSessChallenge);
+        if (Registry::get(Request::class)->getRequestEscapedParameter("d3dev")
+            && false == (bool) Registry::getConfig()->getActiveShop()->isProductiveMode()
+            && Registry::getConfig()->getConfigParam('blD3DevAvoidDelBasket')
+        ) {
+            Registry::getSession()->setVariable( 'sess_challenge', $sSessChallenge );
+        }
 
         if (Registry::get(Request::class)->getRequestEscapedParameter("d3dev")
             && false == (bool) Registry::getConfig()->getActiveShop()->isProductiveMode()
@@ -94,6 +99,27 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
             header( 'HTTP/1.0 401 Unauthorized' );
             exit( 1 );
         }
+    }
+
+    /**
+     * @return bool|d3_dev_oxorder|\oxOrder
+     * @throws DatabaseConnectionException
+     * @throws DatabaseErrorException
+     */
+    public function getOrder()
+    {
+        $oOrder = parent::getOrder();
+
+        if ((false == $oOrder || !$oOrder->getFieldData('oxordernr'))
+            && Registry::get(Request::class)->getRequestEscapedParameter("d3dev")
+            && false == (bool) Registry::getConfig()->getActiveShop()->isProductiveMode()
+            && Registry::getConfig()->getConfigParam('blD3DevShowThankyou')
+        ) {
+            $this->_oOrder = $this->d3GetLastOrder();
+            $oOrder = $this->_oOrder;
+        }
+
+        return $oOrder;
     }
 
     /**
