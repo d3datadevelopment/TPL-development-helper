@@ -1,10 +1,5 @@
 <?php
 
-namespace D3\Devhelper\Modules\Core;
-
-use D3\Devhelper\Modules\Application\Model as ModuleModel;
-use OxidEsales\Eshop\Core\Registry;
-
 /**
  * This Software is the property of Data Development and is protected
  * by copyright law - it is NOT Freeware.
@@ -19,6 +14,12 @@ use OxidEsales\Eshop\Core\Registry;
  * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
  * @link      http://www.oxidmodule.com
  */
+
+namespace D3\Devhelper\Modules\Core;
+
+use D3\Devhelper\Modules\Application\Model as ModuleModel;
+use OxidEsales\Eshop\Core\Exception\StandardException;
+use OxidEsales\Eshop\Core\Registry;
 
 class d3_dev_oxemail extends d3_dev_oxemail_parent
 {
@@ -94,7 +95,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
      *
      * @return mixed|string
      */
-    public function d3GetInquiryMailContent($oInquiry, $sType)
+    public function d3GetInquiryMailContent($oInquiry, $sType )
     {
         if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
             return '';
@@ -154,6 +155,10 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         return $oSmarty->fetch($myConfig->getTemplatePath($sTpl, false));
     }
 
+    /**
+     * @return bool
+     * @throws StandardException
+     */
     protected function _sendMail()
     {
         if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
@@ -161,6 +166,8 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         }
 
         $this->d3clearRecipients();
+        $this->d3clearReplies();
+        $this->d3clearReplyTo();
         $this->d3clearCC();
         $this->d3clearBCC();
 
@@ -188,6 +195,44 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
             }
         }
         $this->_aRecipients = $aRecipients;
+    }
+
+    public function d3clearReplies()
+    {
+        $aRecipients = array();
+        if (is_array($this->_aReplies) && count($this->_aReplies)) {
+            foreach ($this->_aReplies as $aRecInfo) {
+                if (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))
+                    && $sNewRecipient != $aRecInfo[0]
+                ) {
+                    $aRecInfo[1] = $aRecInfo[1]." (".$aRecInfo[0].")";
+                    $aRecInfo[0] = $sNewRecipient;
+                    $aRecipients[] = $aRecInfo;
+                } elseif (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))) {
+                    $aRecipients[] = $aRecInfo;
+                }
+            }
+        }
+        $this->_aReplies = $aRecipients;
+    }
+
+    public function d3clearReplyTo()
+    {
+        $aRecipients = array();
+        if (is_array($this->ReplyTo) && count($this->ReplyTo)) {
+            foreach ($this->ReplyTo as $aRecInfo) {
+                if (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))
+                    && $sNewRecipient != $aRecInfo[0]
+                ) {
+                    $aRecInfo[1] = $aRecInfo[1]." (".$aRecInfo[0].")";
+                    $aRecInfo[0] = $sNewRecipient;
+                    $aRecipients[] = $aRecInfo;
+                } elseif (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))) {
+                    $aRecipients[] = $aRecInfo;
+                }
+            }
+        }
+        $this->ReplyTo = $aRecipients;
     }
 
     public function d3clearCC()
@@ -230,6 +275,11 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $this->bcc = $aCc;
     }
 
+    /**
+     * @param $sMailAddress
+     *
+     * @return bool|string
+     */
     public function getNewRecipient($sMailAddress)
     {
         if (Registry::getConfig()->getConfigParam('blD3DevBlockMails')) {

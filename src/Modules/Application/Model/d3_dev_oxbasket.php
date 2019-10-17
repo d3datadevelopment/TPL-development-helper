@@ -1,9 +1,5 @@
 <?php
 
-namespace D3\Devhelper\Modules\Application\Model;
-
-use OxidEsales\Eshop\Core\Registry;
-
 /**
  * This Software is the property of Data Development and is protected
  * by copyright law - it is NOT Freeware.
@@ -18,6 +14,12 @@ use OxidEsales\Eshop\Core\Registry;
  * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
  * @link      http://www.oxidmodule.com
  */
+
+namespace D3\Devhelper\Modules\Application\Model;
+
+use OxidEsales\Eshop\Application\Model\BasketItem;
+use OxidEsales\Eshop\Application\Model\OrderArticle;
+use OxidEsales\Eshop\Core\Registry;
 
 class d3_dev_oxbasket extends d3_dev_oxbasket_parent
 {
@@ -60,5 +62,38 @@ class d3_dev_oxbasket extends d3_dev_oxbasket_parent
                 }
             }
         }
+    }
+
+    /**
+     * @param OrderArticle $oOrderArticle
+     *
+     * @return |null
+     * @throws \oxArticleInputException
+     * @throws \oxNoArticleException
+     */
+    public function d3addOrderArticleToBasket($oOrderArticle)
+    {
+        // adding only if amount > 0
+        if ($oOrderArticle->oxorderarticles__oxamount->value > 0) {
+            $this->_isForOrderRecalculation = true;
+            $sItemId = $oOrderArticle->getId();
+
+            //inserting new
+            /** @var d3_dev_oxbasketitem $oBasketItem */
+            $oBasketItem = oxNew( BasketItem::class);
+            $oBasketItem->initFromOrderArticle($oOrderArticle);
+            $oBasketItem->d3ConvertToArticleObject();
+            $oBasketItem->setWrapping($oOrderArticle->oxorderarticles__oxwrapid->value);
+            $oBasketItem->setBundle($oOrderArticle->isBundle());
+
+            $this->_aBasketContents[$sItemId] = $oBasketItem;
+
+            //calling update method
+            $this->onUpdate();
+
+            return $this->_aBasketContents[$sItemId];
+        }
+
+        return null;
     }
 }
