@@ -53,8 +53,7 @@ $aModule = array(
             '</ul><br>Jede dieser Optionen muss aus Sicherheitsgr&uuml;nden unter "Einstell." aktiviert werden. Weiterhin darf der Shop nicht im Produktivmodus betrieben werden.<br><br>'.
             '* Ordernummer an URL erg&auml;nzen, wenn bestimmte Bestellungen angezeigt werden sollen',
         'en'    => ''),
-    // 'thumbnail'    => 'picture.png',
-    'version'      => '2.0.0.0',
+    'version'      => '2.0.1.0',
     'author'       => 'D&sup3; Data Development (Inh.: Thomas Dartsch)',
     'email'        => 'support@shopmodule.com',
     'url'          => 'http://www.oxidmodule.com/',
