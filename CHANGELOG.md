@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## 2.0.1.0 (2019-10-21)
 ### Changed
-- Mails können auch Dreingabeartikel regenieren und darstellen
+- Mails können auch Dreingabeartikel regenerieren und darstellen
 - weitere Mailinformationen werden für Mailumleitung geändert
 ### Fixed
 - verhindert Thankyou Redirect, wenn keine Order geladen wurde
