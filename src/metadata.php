@@ -13,16 +13,14 @@ use OxidEsales\Eshop\Core\Registry;
  */
 $sMetadataVersion = '2.0';
 
-$sStyle = class_exists(D3\Devhelper\Application\Controller\d3dev::class) ? "background-color: darkred; color: white; padding: 0 10px;" : "";
-
 /**
  * Module information
  */
 $aModule = array(
     'id'           => 'd3dev',
     'title'        =>
-        (class_exists(D3\ModCfg\Application\Model\d3utils::class) ? D3\ModCfg\Application\Model\d3utils::getInstance()->getD3Logo() : 'D&sup3;') .
-        ' <span style="'.$sStyle.';">TPL Development Tool</span>',
+        '<svg style="height:1em;width:1em"><image xlink:href="https://logos.oxidmodule.com/d3logo.svg" style="height:1em;width:1em" /></svg> '.
+        'TPL Development Tool',
     'description'  => array(
         'de'    => '<script type="text/javascript"><!--
                     function showNote() {
