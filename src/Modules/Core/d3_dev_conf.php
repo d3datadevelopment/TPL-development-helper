@@ -1,5 +1,6 @@
 <?php
- /**
+
+/**
  * This Software is the property of Data Development and is protected
  * by copyright law - it is NOT Freeware.
  *
@@ -14,22 +15,15 @@
  * @link      http://www.oxidmodule.com
  */
 
-namespace D3\Devhelper\Modules\Application\Model;
+namespace D3\Devhelper\Modules\Core;
 
-use OxidEsales\Eshop\Application\Model\ArticleList;
-
-class d3_dev_oxorderarticle extends d3_dev_oxorderarticle_parent
+class d3_dev_conf
 {
-    /**
-     * @return null|ArticleList
-     */
-    public function getCustomerAlsoBoughtThisProducts()
-    {
-        $oArticle = $this->getArticle();
+    const OPTION_PREVENTDELBASKET = 'blD3DevAvoidDelBasket';
+    const OPTION_SHOWTHANKYOU = 'blD3DevShowThankyou';
 
-        /** @var ArticleList $artList */
-        $artList = $oArticle->getCustomerAlsoBoughtThisProducts();
+    const OPTION_SHOWMAILSINBROWSER = 'blD3DevShowOrderMailsInBrowser';
 
-        return $artList;
-    }
+    const OPTION_BLOCKMAIL = 'blD3DevBlockMails';
+    const OPTION_REDIRECTMAIL = 'sD3DevRedirectMail';
 }

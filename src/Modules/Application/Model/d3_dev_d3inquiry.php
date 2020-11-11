@@ -7,7 +7,6 @@ use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
 use OxidEsales\Eshop\Core\Registry;
-use OxidEsales\Eshop\Core\Request;
 
 /**
  * This Software is the property of Data Development and is protected
@@ -61,7 +60,7 @@ class d3_dev_d3inquiry extends d3_dev_d3inquiry_parent
      */
     public function d3getLastInquiryId()
     {
-        $inquiryNr = (int) Registry::get(Request::class)->getRequestEscapedParameter('d3inquirynr');
+        $inquiryNr = (int) Registry::getRequest()->getRequestEscapedParameter('d3inquirynr');
         $sWhere = 1;
         if ($inquiryNr) {
             $sWhere = ' oxinquirynr = ' .  $inquiryNr;

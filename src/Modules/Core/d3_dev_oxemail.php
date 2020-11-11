@@ -20,6 +20,10 @@ namespace D3\Devhelper\Modules\Core;
 use D3\Devhelper\Modules\Application\Model as ModuleModel;
 use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\EshopCommunity\Internal\Framework\Smarty\Bridge\SmartyTemplateRendererBridge;
+use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererBridgeInterface;
+use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererInterface;
+use Smarty;
 
 class d3_dev_oxemail extends d3_dev_oxemail_parent
 {
@@ -49,7 +53,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
                 $sTpl = $this->_sOrderUserTemplate;
         }
 
-        $myConfig = $this->getConfig();
+        $myConfig = Registry::getConfig();
 
         $oShop = $this->_getShop();
 
@@ -78,14 +82,36 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $this->setSmtp($oShop);
 
         // create messages
-        /** @var \Smarty $oSmarty */
-        $oSmarty = $this->_getSmarty();
         $this->setViewData("order", $oOrder);
 
         // Process view data array through oxoutput processor
         $this->_processViewArray();
 
-        return $oSmarty->fetch($myConfig->getTemplatePath($sTpl, false));
+        if (class_exists(SmartyTemplateRendererBridge::class)) {
+            $renderer = $this->getRenderer();
+            $ret = $renderer->renderTemplate($myConfig->getTemplatePath($sTpl, false), $this->getViewData());
+        } else {
+            /** @var Smarty $oSmarty */
+            $oSmarty = $this->_getSmarty();
+            $ret = $oSmarty->fetch($myConfig->getTemplatePath($sTpl, false));
+        }
+
+        return $ret;
+    }
+
+    /**
+     * from OXID 6.2, required because private in Email class
+     * Templating instance getter
+     *
+     * @return TemplateRendererInterface
+     */
+    protected function getRenderer()
+    {
+        $bridge = \OxidEsales\EshopCommunity\Internal\Container\ContainerFactory::getInstance()->getContainer()
+            ->get(TemplateRendererBridgeInterface::class);
+        $bridge->setEngine($this->_getSmarty());
+
+        return $bridge->getTemplateRenderer();
     }
 
     /**
@@ -116,7 +142,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
                 $sTpl = $this->_sInquiryUserTemplate;
         }
 
-        $myConfig = $this->getConfig();
+        $myConfig = Registry::getConfig();
 
         $oShop = $this->_getShop();
 
@@ -145,14 +171,21 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $this->setSmtp($oShop);
 
         // create messages
-        /** @var \Smarty $oSmarty */
-        $oSmarty = $this->_getSmarty();
         $this->setViewData("inquiry", $oInquiry);
 
         // Process view data array through oxoutput processor
         $this->_processViewArray();
 
-        return $oSmarty->fetch($myConfig->getTemplatePath($sTpl, false));
+        if (class_exists(SmartyTemplateRendererBridge::class)) {
+            $renderer = $this->getRenderer();
+            $ret = $renderer->renderTemplate($myConfig->getTemplatePath($sTpl, false), $this->getViewData());
+        } else {
+            /** @var Smarty $oSmarty */
+            $oSmarty = $this->_getSmarty();
+            $ret = $oSmarty->fetch($myConfig->getTemplatePath($sTpl, false));
+        }
+
+        return $ret;
     }
 
     /**
@@ -282,10 +315,10 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
      */
     public function getNewRecipient($sMailAddress)
     {
-        if (Registry::getConfig()->getConfigParam('blD3DevBlockMails')) {
+        if (Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_BLOCKMAIL)) {
             return false;
-        } elseif (Registry::getConfig()->getConfigParam('sD3DevRedirectMail')) {
-            return trim(Registry::getConfig()->getConfigParam('sD3DevRedirectMail'));
+        } elseif (Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_REDIRECTMAIL)) {
+            return trim(Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_REDIRECTMAIL));
         }
 
         return $sMailAddress;

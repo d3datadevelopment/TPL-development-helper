@@ -16,27 +16,40 @@
 
 namespace D3\Devhelper\Modules\Application\Controller
 {
-    class d3_dev_thankyou_parent extends \OxidEsales\Eshop\Application\Controller\ThankYouController {}
+
+    use OxidEsales\Eshop\Application\Controller\ThankYouController;
+
+    class d3_dev_thankyou_parent extends ThankYouController {}
 }
 
 namespace D3\Devhelper\Modules\Application\Model
 {
-    class d3_dev_oxorder_parent extends \OxidEsales\Eshop\Application\Model\Order {}
+
+    use OxidEsales\Eshop\Application\Controller\OrderController;
+    use OxidEsales\Eshop\Application\Model\Basket;
+    use OxidEsales\Eshop\Application\Model\BasketItem;
+    use OxidEsales\Eshop\Application\Model\Order;
+    use OxidEsales\Eshop\Application\Model\OrderArticle;
+
+    class d3_dev_oxorder_parent extends Order {}
 
     class d3_dev_d3inquiry_parent extends d3inquiry {}
 
     class d3_dev_d3inquiryarticle_parent extends d3inquiryarticle {}
 
-    class d3_dev_oxorderarticle_parent extends \OxidEsales\Eshop\Application\Model\OrderArticle {}
+    class d3_dev_oxorderarticle_parent extends OrderArticle {}
 
-    class d3_dev_oxbasket_parent extends \OxidEsales\Eshop\Application\Model\Basket {}
+    class d3_dev_oxbasket_parent extends Basket {}
 
-    class d3_dev_oxbasketitem_parent extends \OxidEsales\Eshop\Application\Model\BasketItem {}
+    class d3_dev_oxbasketitem_parent extends BasketItem {}
 
-    class d3_dev_order_parent extends \OxidEsales\Eshop\Application\Controller\OrderController {}
+    class d3_dev_order_parent extends OrderController {}
 }
 
 namespace D3\Devhelper\Modules\Core
 {
-    class d3_dev_oxemail_parent extends \OxidEsales\Eshop\Core\Email {}
+
+    use OxidEsales\Eshop\Core\Email;
+
+    class d3_dev_oxemail_parent extends Email {}
 }

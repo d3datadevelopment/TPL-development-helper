@@ -16,11 +16,13 @@
 
 namespace D3\Devhelper\Modules\Application\Model;
 
+use oxArticleInputException;
 use OxidEsales\Eshop\Application\Model\Article;
 use OxidEsales\Eshop\Application\Model\OrderArticle;
 use OxidEsales\Eshop\Core\Exception\ArticleException;
 use OxidEsales\Eshop\Core\Exception\ArticleInputException;
 use OxidEsales\Eshop\Core\Exception\NoArticleException;
+use oxNoArticleException;
 
 class d3_dev_oxbasketitem extends d3_dev_oxbasketitem_parent
 {
@@ -48,8 +50,8 @@ class d3_dev_oxbasketitem extends d3_dev_oxbasketitem_parent
     }
 
     /**
-     * @throws \oxArticleInputException
-     * @throws \oxNoArticleException
+     * @throws oxArticleInputException
+     * @throws oxNoArticleException
      */
     public function d3ConvertToArticleObject()
     {
