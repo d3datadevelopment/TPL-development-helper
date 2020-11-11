@@ -20,10 +20,9 @@ namespace D3\Devhelper\Modules\Core;
 use D3\Devhelper\Modules\Application\Model as ModuleModel;
 use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Registry;
-use OxidEsales\EshopCommunity\Internal\Framework\Smarty\Bridge\SmartyTemplateRendererBridge;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererBridgeInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererInterface;
-use Smarty;
 
 class d3_dev_oxemail extends d3_dev_oxemail_parent
 {
@@ -87,16 +86,8 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         // Process view data array through oxoutput processor
         $this->_processViewArray();
 
-        if (class_exists(SmartyTemplateRendererBridge::class)) {
-            $renderer = $this->getRenderer();
-            $ret = $renderer->renderTemplate($myConfig->getTemplatePath($sTpl, false), $this->getViewData());
-        } else {
-            /** @var Smarty $oSmarty */
-            $oSmarty = $this->_getSmarty();
-            $ret = $oSmarty->fetch($myConfig->getTemplatePath($sTpl, false));
-        }
-
-        return $ret;
+        $renderer = $this->getRenderer();
+        return $renderer->renderTemplate($myConfig->getTemplatePath($sTpl, false), $this->getViewData());
     }
 
     /**
@@ -107,7 +98,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
      */
     protected function getRenderer()
     {
-        $bridge = \OxidEsales\EshopCommunity\Internal\Container\ContainerFactory::getInstance()->getContainer()
+        $bridge = ContainerFactory::getInstance()->getContainer()
             ->get(TemplateRendererBridgeInterface::class);
         $bridge->setEngine($this->_getSmarty());
 
@@ -176,16 +167,27 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         // Process view data array through oxoutput processor
         $this->_processViewArray();
 
-        if (class_exists(SmartyTemplateRendererBridge::class)) {
-            $renderer = $this->getRenderer();
-            $ret = $renderer->renderTemplate($myConfig->getTemplatePath($sTpl, false), $this->getViewData());
-        } else {
-            /** @var Smarty $oSmarty */
-            $oSmarty = $this->_getSmarty();
-            $ret = $oSmarty->fetch($myConfig->getTemplatePath($sTpl, false));
-        }
+        $renderer = $this->getRenderer();
+        return $renderer->renderTemplate($myConfig->getTemplatePath($sTpl, false), $this->getViewData());
+    }
 
-        return $ret;
+    /**
+     * @param $aRecInfo
+     * @param array $aCc
+     * @return array
+     */
+    public function d3ChangeRecipient($aRecInfo, array $aCc): array
+    {
+        if (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))
+            && $sNewRecipient != $aRecInfo[0]
+        ) {
+            $aRecInfo[1] = $aRecInfo[1] . " (" . $aRecInfo[0] . ")";
+            $aRecInfo[0] = $sNewRecipient;
+            $aCc[] = $aRecInfo;
+        } elseif (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))) {
+            $aCc[] = $aRecInfo;
+        }
+        return $aCc;
     }
 
     /**
@@ -211,20 +213,35 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         return true;
     }
 
+    /**
+     * @return bool
+     * @throws StandardException
+     */
+    protected function sendMail()
+    {
+        if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
+            return parent::sendMail();
+        }
+
+        $this->d3clearRecipients();
+        $this->d3clearReplies();
+        $this->d3clearReplyTo();
+        $this->d3clearCC();
+        $this->d3clearBCC();
+
+        if (count($this->getRecipient())) {
+            return parent::sendMail();
+        }
+
+        return true;
+    }
+
     public function d3clearRecipients()
     {
         $aRecipients = array();
         if (is_array($this->_aRecipients) && count($this->_aRecipients)) {
             foreach ($this->_aRecipients as $aRecInfo) {
-                if (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))
-                    && $sNewRecipient != $aRecInfo[0]
-                ) {
-                    $aRecInfo[1] = $aRecInfo[1]." (".$aRecInfo[0].")";
-                    $aRecInfo[0] = $sNewRecipient;
-                    $aRecipients[] = $aRecInfo;
-                } elseif (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))) {
-                    $aRecipients[] = $aRecInfo;
-                }
+                $aRecipients = $this->d3ChangeRecipient($aRecInfo, $aRecipients);
             }
         }
         $this->_aRecipients = $aRecipients;
@@ -235,15 +252,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $aRecipients = array();
         if (is_array($this->_aReplies) && count($this->_aReplies)) {
             foreach ($this->_aReplies as $aRecInfo) {
-                if (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))
-                    && $sNewRecipient != $aRecInfo[0]
-                ) {
-                    $aRecInfo[1] = $aRecInfo[1]." (".$aRecInfo[0].")";
-                    $aRecInfo[0] = $sNewRecipient;
-                    $aRecipients[] = $aRecInfo;
-                } elseif (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))) {
-                    $aRecipients[] = $aRecInfo;
-                }
+                $aRecipients = $this->d3ChangeRecipient($aRecInfo, $aRecipients);
             }
         }
         $this->_aReplies = $aRecipients;
@@ -254,15 +263,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $aRecipients = array();
         if (is_array($this->ReplyTo) && count($this->ReplyTo)) {
             foreach ($this->ReplyTo as $aRecInfo) {
-                if (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))
-                    && $sNewRecipient != $aRecInfo[0]
-                ) {
-                    $aRecInfo[1] = $aRecInfo[1]." (".$aRecInfo[0].")";
-                    $aRecInfo[0] = $sNewRecipient;
-                    $aRecipients[] = $aRecInfo;
-                } elseif (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))) {
-                    $aRecipients[] = $aRecInfo;
-                }
+                $aRecipients = $this->d3ChangeRecipient($aRecInfo, $aRecipients);
             }
         }
         $this->ReplyTo = $aRecipients;
@@ -273,15 +274,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $aCc = array();
         if (is_array($this->cc) && count($this->cc)) {
             foreach ($this->cc as $aRecInfo) {
-                if (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))
-                    && $sNewRecipient != $aRecInfo[0]
-                ) {
-                    $aRecInfo[1] = $aRecInfo[1]." (".$aRecInfo[0].")";
-                    $aRecInfo[0] = $sNewRecipient;
-                    $aCc[] = $aRecInfo;
-                } elseif (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))) {
-                    $aCc[] = $aRecInfo;
-                }
+                $aCc = $this->d3ChangeRecipient($aRecInfo, $aCc);
             }
         }
 
@@ -293,15 +286,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $aCc = array();
         if (is_array($this->bcc) && count($this->bcc)) {
             foreach ($this->bcc as $aRecInfo) {
-                if (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))
-                    && $sNewRecipient != $aRecInfo[0]
-                ) {
-                    $aRecInfo[1] = $aRecInfo[1]." (".$aRecInfo[0].")";
-                    $aRecInfo[0] = $sNewRecipient;
-                    $aCc[] = $aRecInfo;
-                } elseif (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))) {
-                    $aCc[] = $aRecInfo;
-                }
+                $aCc = $this->d3ChangeRecipient($aRecInfo, $aCc);
             }
         }
 

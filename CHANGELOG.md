@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 2.1.0.0 (2020-11-11)
+### Changed
+- Modul verwendbar in OXID 6.2
+
+---
+
 ## 2.0.1.0 (2019-10-21)
 ### Changed
 - Mails können auch Dreingabeartikel regenerieren und darstellen

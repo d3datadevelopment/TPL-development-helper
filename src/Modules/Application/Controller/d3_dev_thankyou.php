@@ -71,6 +71,7 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
      */
     public function render()
     {
+        $currentClass = '';
         if ($this->d3DevCanShowThankyou()) {
             $currentClass = $this->getViewConfig()->getViewConfigParam('cl');
         }
