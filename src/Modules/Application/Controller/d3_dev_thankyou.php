@@ -3,15 +3,16 @@
 namespace D3\Devhelper\Modules\Application\Controller;
 
 // .../?cl=thankyou[&d3orderid=23]
-use D3\Devhelper\Modules\Application\Model\d3_dev_d3inquiry;
 use D3\Devhelper\Modules\Application\Model\d3_dev_oxorder;
+use D3\Devhelper\Modules\Core\d3_dev_conf;
+use Exception;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
 use OxidEsales\Eshop\Core\Exception\UserException;
 use OxidEsales\Eshop\Core\Registry;
-use OxidEsales\Eshop\Core\Request;
+use oxOrder;
 
 /**
  * This Software is the property of Data Development and is protected
@@ -40,29 +41,54 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
 
         parent::init();
 
-        if (Registry::get(Request::class)->getRequestEscapedParameter("d3dev")
+        if (Registry::getRequest()->getRequestEscapedParameter("d3dev")
             && false == (bool) Registry::getConfig()->getActiveShop()->isProductiveMode()
-            && Registry::getConfig()->getConfigParam('blD3DevAvoidDelBasket')
+            && Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_PREVENTDELBASKET)
         ) {
             Registry::getSession()->setVariable( 'sess_challenge', $sSessChallenge );
         }
 
-        if (Registry::get(Request::class)->getRequestEscapedParameter("d3dev")
-            && false == (bool) Registry::getConfig()->getActiveShop()->isProductiveMode()
-            && Registry::getConfig()->getConfigParam('blD3DevShowThankyou')
-        ) {
+        if ($this->d3DevCanShowThankyou()) {
             $this->_d3authenticate();
             $oOrder = $this->d3GetLastOrder();
-            $oBasket = $oOrder->d3DevGetOrderBasket();
-            $this->_oBasket = $oBasket;
+            $this->_oBasket = $oOrder->d3DevGetOrderBasket();
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function d3DevCanShowThankyou()
+    {
+        return Registry::getRequest()->getRequestEscapedParameter("d3dev")
+        && false == (bool) Registry::getConfig()->getActiveShop()->isProductiveMode()
+        && Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_SHOWTHANKYOU);
+    }
+
+    /**
+     * @return string
+     */
+    public function render()
+    {
+        $currentClass = '';
+        if ($this->d3DevCanShowThankyou()) {
+            $currentClass = $this->getViewConfig()->getViewConfigParam('cl');
+        }
+
+        $ret = parent::render();
+
+        if ($this->d3DevCanShowThankyou()) {
+            $this->getViewConfig()->setViewConfigParam('cl', $currentClass);
+        }
+
+        return $ret;
     }
 
     protected function _d3authenticate ()
     {
         try {
-            $sUser = Registry::get(Request::class)->getRequestEscapedParameter( 'usr');
-            $sPassword = Registry::get(Request::class)->getRequestEscapedParameter('pwd');
+            $sUser = Registry::getRequest()->getRequestEscapedParameter( 'usr');
+            $sPassword = Registry::getRequest()->getRequestEscapedParameter('pwd');
 
             if ( !$sUser || !$sPassword ) {
                 $sUser = $_SERVER[ 'PHP_AUTH_USER' ];
@@ -93,7 +119,7 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
                 throw $oEx;
             }
         }
-        catch ( \Exception $oEx ) {
+        catch ( Exception $oEx ) {
             $oShop = Registry::getConfig()->getActiveShop();
             header( 'WWW-Authenticate: Basic realm="{' . $oShop->getFieldData('oxname') . '"' );
             header( 'HTTP/1.0 401 Unauthorized' );
@@ -102,7 +128,7 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
     }
 
     /**
-     * @return bool|d3_dev_oxorder|\oxOrder
+     * @return bool|d3_dev_oxorder|oxOrder
      * @throws DatabaseConnectionException
      * @throws DatabaseErrorException
      */
@@ -111,12 +137,18 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
         $oOrder = parent::getOrder();
 
         if ((false == $oOrder || !$oOrder->getFieldData('oxordernr'))
-            && Registry::get(Request::class)->getRequestEscapedParameter("d3dev")
-            && false == (bool) Registry::getConfig()->getActiveShop()->isProductiveMode()
-            && Registry::getConfig()->getConfigParam('blD3DevShowThankyou')
+            && $this->d3DevCanShowThankyou()
         ) {
-            $this->_oOrder = $this->d3GetLastOrder();
-            $oOrder = $this->_oOrder;
+            try {
+                $this->_oOrder = $this->d3GetLastOrder();
+                $oOrder = $this->_oOrder;
+
+                if (!$oOrder || !$oOrder->getFieldData('oxordernr')) {
+                    throw oxNew(\RuntimeException::class, 'unknown order');
+                }
+            } catch (Exception $e) {
+                die($e->getMessage());
+            }
         }
 
         return $oOrder;
@@ -138,22 +170,5 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
         $oOrder->d3getLastOrder();
 
         return $oOrder;
-    }
-
-    /**
-     * @return bool|d3_dev_d3inquiry
-     * @throws DatabaseConnectionException
-     */
-    public function d3GetLastInquiry()
-    {
-        if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
-            return false;
-        }
-
-        /** @var d3_dev_d3inquiry $oInquiry */
-        $oInquiry = oxNew('d3inquiry');
-        $oInquiry->d3getLastInquiry();
-
-        return $oInquiry;
     }
 }

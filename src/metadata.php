@@ -1,5 +1,21 @@
 <?php
 
+/**
+ * This Software is the property of Data Development and is protected
+ * by copyright law - it is NOT Freeware.
+ *
+ * Any unauthorized use of this software without a valid license
+ * is a violation of the license agreement and will be prosecuted by
+ * civil and criminal law.
+ *
+ * http://www.shopmodule.com
+ *
+ * @copyright © D³ Data Development, Thomas Dartsch
+ * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
+ * @link      http://www.oxidmodule.com
+ */
+
+use D3\Devhelper\Application\Controller\d3dev;
 use D3\Devhelper\Modules\Core as ModuleCore;
 use D3\Devhelper\Modules\Application\Controller as ModuleController;
 use D3\Devhelper\Modules\Application\Model as ModuleModel;
@@ -11,22 +27,22 @@ use OxidEsales\Eshop\Core\Registry;
 /**
  * Metadata version
  */
-$sMetadataVersion = '2.0';
-
-$sStyle = class_exists(D3\Devhelper\Application\Controller\d3dev::class) ? "background-color: darkred; color: white; padding: 0 10px;" : "";
+$sMetadataVersion = '2.1';
+$sLogo = '<img src="https://logos.oxidmodule.com/d3logo.svg" alt="(D3)" style="height:1em;width:1em"> ';
 
 /**
  * Module information
  */
 $aModule = array(
     'id'           => 'd3dev',
-    'title'        =>
-        (class_exists(D3\ModCfg\Application\Model\d3utils::class) ? D3\ModCfg\Application\Model\d3utils::getInstance()->getD3Logo() : 'D&sup3;') .
-        ' <span style="'.$sStyle.';">TPL Development Tool</span>',
-    'description'  => array(
+    'title'        => [
+        'de'    => $sLogo . 'TPL Entwicklerwerkzeug',
+        'en'    => $sLogo . 'TPL Development Tool'
+    ],
+    'description'  => [
         'de'    => '<script type="text/javascript"><!--
                     function showNote() {
-                        var _oElem = document.getElementById("secnote");
+                        let _oElem = document.getElementById("secnote");
                         if (_oElem.style.display === "block") {
                             _oElem.style.display = "none";
                         } else {
@@ -44,72 +60,59 @@ $aModule = array(
                 '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=owner_plain&d3ordernr=" target="_new">Order Owner Plain*</a></li>'.
                 '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=user_html&d3ordernr=" target="_new">Order User HTML*</a></li>'.
                 '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=user_plain&d3ordernr=" target="_new">Order User Plain*</a></li>'.
-                '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showInquiryMailContent&type=owner_html&d3inquirynr=" target="_new">Inquiry Owner HTML*</a></li>'.
-                '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showInquiryMailContent&type=owner_plain&d3inquirynr=" target="_new">Inquiry Owner Plain*</a></li>'.
-                '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showInquiryMailContent&type=user_html&d3inquirynr=" target="_new">Inquiry User HTML*</a></li>'.
-                '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showInquiryMailContent&type=user_plain&d3inquirynr=" target="_new">Inquiry User Plain*</a></li></ul>'.
             '</li>'.
             '<li>blockiert &uuml;bers Framework versendete Mails oder leitet diese um</li>'.
             '</ul><br>Jede dieser Optionen muss aus Sicherheitsgr&uuml;nden unter "Einstell." aktiviert werden. Weiterhin darf der Shop nicht im Produktivmodus betrieben werden.<br><br>'.
             '* Ordernummer an URL erg&auml;nzen, wenn bestimmte Bestellungen angezeigt werden sollen',
-        'en'    => ''),
-    'version'      => '2.0.1.0',
+        'en'    => ''],
+    'version'      => '3.0.0.0',
     'author'       => 'D&sup3; Data Development (Inh.: Thomas Dartsch)',
     'email'        => 'support@shopmodule.com',
     'url'          => 'http://www.oxidmodule.com/',
-    'extend'      => array(
+    'extend'      => [
         OxidController\ThankYouController::class    => ModuleController\d3_dev_thankyou::class,
         OxidModel\Order::class                      => ModuleModel\d3_dev_oxorder::class,
         OxidModel\OrderArticle::class               => ModuleModel\d3_dev_oxorderarticle::class,
         OxidCore\Email::class                       => ModuleCore\d3_dev_oxemail::class,
         OxidModel\Basket::class                     => ModuleModel\d3_dev_oxbasket::class,
         OxidModel\BasketItem::class                 => ModuleModel\d3_dev_oxbasketitem::class,
-    ),
-    'controllers'       => array(
-        'd3dev'     => \D3\Devhelper\Application\Controller\d3dev::class,
-    ),
-    'templates'   => array(
-    ),
-    'events'      => array(
-    ),
-    'blocks'      => array(
-    ),
-    'settings'    => array(
-        array(
+    ],
+    'controllers'       => [
+        'd3dev'     => d3dev::class,
+    ],
+    'templates'   => [],
+    'events'      => [],
+    'blocks'      => [],
+    'settings'    => [
+        [
             'group' => 'd3dev_order',
-            'name' => 'blD3DevAvoidDelBasket',
+            'name' => ModuleCore\d3_dev_conf::OPTION_PREVENTDELBASKET,
             'type' => 'bool',
             'value' => 'false'
-        ),
-        array(
+        ],
+        [
             'group' => 'd3dev_order',
-            'name' => 'blD3DevShowThankyou',
+            'name' => ModuleCore\d3_dev_conf::OPTION_SHOWTHANKYOU,
             'type' => 'bool',
             'value' => 'false'
-        ),
-        array(
+        ],
+        [
             'group' => 'd3dev_mail',
-            'name' => 'blD3DevShowOrderMailsInBrowser',
+            'name' => ModuleCore\d3_dev_conf::OPTION_SHOWMAILSINBROWSER,
             'type' => 'bool',
             'value' => 'false'
-        ),
-        array(
+        ],
+        [
             'group' => 'd3dev_mailblock',
-            'name' => 'blD3DevBlockMails',
+            'name' => ModuleCore\d3_dev_conf::OPTION_BLOCKMAIL,
             'type' => 'bool',
             'value' => 'false'
-        ),
-        array(
+        ],
+        [
             'group' => 'd3dev_mailblock',
-            'name' => 'sD3DevRedirectMail',
+            'name' => ModuleCore\d3_dev_conf::OPTION_REDIRECTMAIL,
             'type' => 'str',
             'value' => 'd3test1@shopmodule.com'
-        ),
-    ),
+        ],
+    ],
 );
-
-
-if (class_exists('d3inquiry')) {
-    $aModule['extend']['d3inquiry']  = ModuleModel\d3_dev_d3inquiry::class;
-    $aModule['extend']['d3inquiryarticle']  = ModuleModel\d3_dev_d3inquiryarticle::class;
-}

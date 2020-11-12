@@ -17,16 +17,19 @@
 
 namespace D3\Devhelper\Modules\Application\Model;
 
+use D3\Devhelper\Modules\Core\d3_dev_conf;
+use oxArticleInputException;
 use OxidEsales\Eshop\Application\Model\BasketItem;
 use OxidEsales\Eshop\Application\Model\OrderArticle;
 use OxidEsales\Eshop\Core\Registry;
+use oxNoArticleException;
 
 class d3_dev_oxbasket extends d3_dev_oxbasket_parent
 {
     public function deleteBasket()
     {
         if (Registry::getConfig()->getActiveShop()->isProductiveMode()
-            || false == Registry::getConfig()->getConfigParam('blD3DevAvoidDelBasket')
+            || false == Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_PREVENTDELBASKET)
         ) {
             parent::deleteBasket();
         }
@@ -67,14 +70,14 @@ class d3_dev_oxbasket extends d3_dev_oxbasket_parent
     /**
      * @param OrderArticle $oOrderArticle
      *
-     * @return |null
-     * @throws \oxArticleInputException
-     * @throws \oxNoArticleException
+     * @return d3_dev_oxbasketitem|null
+     * @throws oxArticleInputException
+     * @throws oxNoArticleException
      */
     public function d3addOrderArticleToBasket($oOrderArticle)
     {
         // adding only if amount > 0
-        if ($oOrderArticle->oxorderarticles__oxamount->value > 0) {
+        if ($oOrderArticle->getFieldData('oxamount') > 0) {
             $this->_isForOrderRecalculation = true;
             $sItemId = $oOrderArticle->getId();
 
@@ -83,7 +86,7 @@ class d3_dev_oxbasket extends d3_dev_oxbasket_parent
             $oBasketItem = oxNew( BasketItem::class);
             $oBasketItem->initFromOrderArticle($oOrderArticle);
             $oBasketItem->d3ConvertToArticleObject();
-            $oBasketItem->setWrapping($oOrderArticle->oxorderarticles__oxwrapid->value);
+            $oBasketItem->setWrapping($oOrderArticle->getFieldData('oxwrapid'));
             $oBasketItem->setBundle($oOrderArticle->isBundle());
 
             $this->_aBasketContents[$sItemId] = $oBasketItem;

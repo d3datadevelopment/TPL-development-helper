@@ -4,6 +4,7 @@ namespace D3\Devhelper\Application\Controller;
 
 use D3\Devhelper\Modules\Application\Controller as ModuleController;
 use D3\Devhelper\Modules\Core as ModuleCore;
+use Exception;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
 use OxidEsales\Eshop\Application\Controller\ThankYouController;
 use OxidEsales\Eshop\Application\Model\User;
@@ -12,7 +13,6 @@ use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
 use OxidEsales\Eshop\Core\Exception\UserException;
 use OxidEsales\Eshop\Core\Registry;
-use OxidEsales\Eshop\Core\Request;
 
 /**
  * This Software is the property of Data Development and is protected
@@ -41,8 +41,8 @@ class d3dev extends FrontendController
     protected function _authenticate ()
     {
         try {
-            $sUser = Registry::get(Request::class)->getRequestEscapedParameter('usr');
-            $sPassword = Registry::get(Request::class)->getRequestEscapedParameter('pwd');
+            $sUser = Registry::getRequest()->getRequestEscapedParameter('usr');
+            $sPassword = Registry::getRequest()->getRequestEscapedParameter('pwd');
 
             if ( !$sUser || !$sPassword ) {
                 $sUser = $_SERVER[ 'PHP_AUTH_USER' ];
@@ -67,13 +67,10 @@ class d3dev extends FrontendController
             }
             $oUser = oxNew( User::class );
             if ( !$sUser || !$sPassword || !$oUser->login( $sUser, $sPassword ) ) {
-                /** @var UserException $oEx */
-                $oEx = oxNew( UserException::class, 'EXCEPTION_USER_NOVALIDLOGIN' );
-
-                throw $oEx;
+                throw oxNew( UserException::class, 'EXCEPTION_USER_NOVALIDLOGIN' );
             }
         }
-        catch ( \Exception $oEx ) {
+        catch ( Exception $oEx ) {
             $oShop = Registry::getConfig()->getActiveShop();
             header( 'WWW-Authenticate: Basic realm="' . $oShop->getFieldData('oxname') . '"' );
             header( 'HTTP/1.0 401 Unauthorized' );
@@ -90,12 +87,12 @@ class d3dev extends FrontendController
         header('Content-type: text/html; charset='.Registry::getLang()->translateString('charset'));
 
         if (Registry::getConfig()->getActiveShop()->isProductiveMode()
-            || false == Registry::getConfig()->getConfigParam('blD3DevShowOrderMailsInBrowser')
+            || false == Registry::getConfig()->getConfigParam(ModuleCore\d3_dev_conf::OPTION_SHOWMAILSINBROWSER)
         ) {
             Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl().'index.php?cl=start');
         }
 
-        $sTpl = Registry::get(Request::class)->getRequestEscapedParameter('type');
+        $sTpl = Registry::getRequest()->getRequestEscapedParameter('type');
 
         /** @var ModuleController\d3_dev_thankyou $oThankyou */
         $oThankyou = oxNew(ThankYouController::class);
@@ -104,29 +101,6 @@ class d3dev extends FrontendController
         /** @var ModuleCore\d3_dev_oxemail $oEmail */
         $oEmail = oxNew(Email::class);
         echo $oEmail->d3GetOrderMailContent($oOrder, $sTpl);
-        die();
-    }
-
-    /**
-     * @throws DatabaseConnectionException
-     */
-    public function showInquiryMailContent()
-    {
-        if (Registry::getConfig()->getActiveShop()->isProductiveMode()
-            || false == Registry::getConfig()->getConfigParam('blD3DevShowOrderMailsInBrowser')
-        ) {
-            Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl().'index.php?cl=start');
-        }
-
-        $sTpl = Registry::get(Request::class)->getRequestEscapedParameter('type');
-
-        /** @var ModuleController\d3_dev_thankyou $oThankyou */
-        $oThankyou = oxNew(ThankYouController::class);
-        $oOrder = $oThankyou->d3GetLastInquiry();
-
-        /** @var ModuleCore\d3_dev_oxemail $oEmail */
-        $oEmail = oxNew(Email::class);
-        echo $oEmail->d3GetInquiryMailContent($oOrder, $sTpl);
         die();
     }
 }

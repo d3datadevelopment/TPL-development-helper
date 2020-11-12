@@ -10,13 +10,16 @@
     "devhelper",
     "developer",
     "development",
-    "tools"
+    "tools",
+    "template",
+    "e-mail",
+    "thankyou"
   ],
   "authors": [
     {
         "name": "D3 Data Development (Inh. Thomas Dartsch)",
         "email": "info@shopmodule.com",
-        "homepage": "http://www.d3data.de"
+        "homepage": "https://www.d3data.de"
     }
   ],
   "homepage": "https://www.oxidmodule.com/",
@@ -30,8 +33,7 @@
     }
   },
   "require": {
-    "php": ">=5.6",
-    "oxid-esales/oxideshop-metapackage-ce": "~6.0.0 || ~6.1.0"
+    "oxid-esales/oxideshop-ce": "6.5 - 6.5"
   },
   "autoload": {
     "psr-4": {

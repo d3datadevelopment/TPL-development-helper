@@ -17,13 +17,16 @@
 
 namespace D3\Devhelper\Modules\Application\Model;
 
+use oxarticleinputexception;
+use OxidEsales\Eshop\Application\Model\Basket;
+use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\Voucher;
 use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
 use OxidEsales\Eshop\Core\Model\ListModel;
 use OxidEsales\Eshop\Core\Registry;
-use OxidEsales\Eshop\Core\Request;
+use oxnoarticleexception;
 
 class d3_dev_oxorder extends d3_dev_oxorder_parent
 {
@@ -53,15 +56,16 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
      */
     public function d3getLastOrderId()
     {
-        $orderNr = (int) Registry::get(Request::class)->getRequestEscapedParameter('d3ordernr');
+        $orderNr = (int) Registry::getRequest()->getRequestEscapedParameter('d3ordernr');
         $sWhere = 1;
         if ($orderNr) {
-            $sWhere = ' oxordernr = ' . DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->quote($orderNr);
+            $sWhere = ' oxordernr = ? ';
         }
+        $parameters = [$orderNr];
 
-        $sSelect = "SELECT oxid FROM ".getViewName('oxorder')." WHERE ".$sWhere." ORDER BY oxorderdate DESC LIMIT 1";
+        $sSelect = "SELECT oxid FROM ".oxNew(Order::class)->getViewName()." WHERE ".$sWhere." ORDER BY oxorderdate DESC LIMIT 1";
 
-        return DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getOne($sSelect);
+        return DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getOne($sSelect, $parameters);
     }
 
     /**
@@ -75,7 +79,7 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
     }
 
     /**
-     * @return d3_dev_oxbasket|\OxidEsales\Eshop\Application\Model\Basket
+     * @return d3_dev_oxbasket|Basket
      */
     public function getBasket()
     {
@@ -94,9 +98,12 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
      */
     protected function _d3AddVouchers()
     {
-        $sSelect = "SELECT oxid FROM oxvouchers WHERE oxorderid = ".DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->quote($this->getId()).";";
+        $sSelect = "SELECT oxid FROM ".oxNew(Voucher::class)->getViewName()." WHERE oxorderid = ?";
 
-        $aResult = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getAll($sSelect);
+        $aResult = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getAll(
+            $sSelect,
+            [$this->getId()]
+        );
 
         foreach ($aResult as $aFields) {
             $oVoucher = oxNew(Voucher::class);
@@ -110,6 +117,8 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
      *
      * @param d3_dev_oxbasket $oBasket        basket object
      * @param ListModel                                      $aOrderArticles order articles
+     * @throws oxArticleInputException
+     * @throws oxNoArticleException
      */
     protected function _d3AddOrderArticlesToBasket($oBasket, $aOrderArticles)
     {
