@@ -3,7 +3,6 @@
 namespace D3\Devhelper\Modules\Application\Controller;
 
 // .../?cl=thankyou[&d3orderid=23]
-use D3\Devhelper\Modules\Application\Model\d3_dev_d3inquiry;
 use D3\Devhelper\Modules\Application\Model\d3_dev_oxorder;
 use D3\Devhelper\Modules\Core\d3_dev_conf;
 use Exception;
@@ -171,22 +170,5 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
         $oOrder->d3getLastOrder();
 
         return $oOrder;
-    }
-
-    /**
-     * @return bool|d3_dev_d3inquiry
-     * @throws DatabaseConnectionException
-     */
-    public function d3GetLastInquiry()
-    {
-        if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
-            return false;
-        }
-
-        /** @var d3_dev_d3inquiry $oInquiry */
-        $oInquiry = oxNew('d3inquiry');
-        $oInquiry->d3getLastInquiry();
-
-        return $oInquiry;
     }
 }

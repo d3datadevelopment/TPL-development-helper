@@ -1,5 +1,20 @@
 <?php
 
+/**
+ * This Software is the property of Data Development and is protected
+ * by copyright law - it is NOT Freeware.
+ *
+ * Any unauthorized use of this software without a valid license
+ * is a violation of the license agreement and will be prosecuted by
+ * civil and criminal law.
+ *
+ * http://www.shopmodule.com
+ *
+ * @copyright © D³ Data Development, Thomas Dartsch
+ * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
+ * @link      http://www.oxidmodule.com
+ */
+
 use D3\Devhelper\Application\Controller\d3dev;
 use D3\Devhelper\Modules\Core as ModuleCore;
 use D3\Devhelper\Modules\Application\Controller as ModuleController;
@@ -45,16 +60,12 @@ $aModule = array(
                 '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=owner_plain&d3ordernr=" target="_new">Order Owner Plain*</a></li>'.
                 '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=user_html&d3ordernr=" target="_new">Order User HTML*</a></li>'.
                 '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showOrderMailContent&type=user_plain&d3ordernr=" target="_new">Order User Plain*</a></li>'.
-                '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showInquiryMailContent&type=owner_html&d3inquirynr=" target="_new">Inquiry Owner HTML*</a></li>'.
-                '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showInquiryMailContent&type=owner_plain&d3inquirynr=" target="_new">Inquiry Owner Plain*</a></li>'.
-                '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showInquiryMailContent&type=user_html&d3inquirynr=" target="_new">Inquiry User HTML*</a></li>'.
-                '<li><a style="text-decoration: underline;" href="'.Registry::getConfig()->getCurrentShopUrl(false).'index.php?cl=d3dev&fnc=showInquiryMailContent&type=user_plain&d3inquirynr=" target="_new">Inquiry User Plain*</a></li></ul>'.
             '</li>'.
             '<li>blockiert &uuml;bers Framework versendete Mails oder leitet diese um</li>'.
             '</ul><br>Jede dieser Optionen muss aus Sicherheitsgr&uuml;nden unter "Einstell." aktiviert werden. Weiterhin darf der Shop nicht im Produktivmodus betrieben werden.<br><br>'.
             '* Ordernummer an URL erg&auml;nzen, wenn bestimmte Bestellungen angezeigt werden sollen',
         'en'    => ''],
-    'version'      => '2.1.0.0',
+    'version'      => '3.0.0.0',
     'author'       => 'D&sup3; Data Development (Inh.: Thomas Dartsch)',
     'email'        => 'support@shopmodule.com',
     'url'          => 'http://www.oxidmodule.com/',
@@ -105,9 +116,3 @@ $aModule = array(
         ],
     ],
 );
-
-
-if (class_exists('d3inquiry')) {
-    $aModule['extend']['d3inquiry']  = ModuleModel\d3_dev_d3inquiry::class;
-    $aModule['extend']['d3inquiryarticle']  = ModuleModel\d3_dev_d3inquiryarticle::class;
-}

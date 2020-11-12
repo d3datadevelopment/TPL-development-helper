@@ -91,7 +91,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
     }
 
     /**
-     * from OXID 6.2, required because private in Email class
+     * required because private in Email class
      * Templating instance getter
      *
      * @return TemplateRendererInterface
@@ -103,72 +103,6 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $bridge->setEngine($this->_getSmarty());
 
         return $bridge->getTemplateRenderer();
-    }
-
-    /**
-     * @param ModuleModel\d3_dev_d3inquiry $oInquiry
-     *
-     * @param                  $sType
-     *
-     * @return mixed|string
-     */
-    public function d3GetInquiryMailContent($oInquiry, $sType )
-    {
-        if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
-            return '';
-        }
-
-        switch (strtolower($sType)) {
-            case 'owner_html':
-                $sTpl = $this->_sInquiryOwnerTemplate;
-                break;
-            case 'owner_plain':
-                $sTpl = $this->_sInquiryOwnerPlainTemplate;
-                break;
-            case 'user_plain':
-                $sTpl = $this->_sInquiryUserPlainTemplate;
-                break;
-            case 'user_html':
-            default:
-                $sTpl = $this->_sInquiryUserTemplate;
-        }
-
-        $myConfig = Registry::getConfig();
-
-        $oShop = $this->_getShop();
-
-        // cleanup
-        $this->_clearMailer();
-
-        // add user defined stuff if there is any
-        $oInquiry = $this->_addUserInfoOrderEMail($oInquiry);
-
-        $oUser = $oInquiry->getInquiryUser();
-        $this->setUser($oUser);
-
-        // send confirmation to shop owner
-        // send not pretending from order user, as different email domain rise spam filters
-        $this->setFrom($oShop->getFieldData('oxowneremail'));
-
-        $oLang = Registry::getLang();
-        $iOrderLang = $oLang->getObjectTplLanguage();
-
-        // if running shop language is different from admin lang. set in config
-        // we have to load shop in config language
-        if ($oShop->getLanguage() != $iOrderLang) {
-            $oShop = $this->_getShop($iOrderLang);
-        }
-
-        $this->setSmtp($oShop);
-
-        // create messages
-        $this->setViewData("inquiry", $oInquiry);
-
-        // Process view data array through oxoutput processor
-        $this->_processViewArray();
-
-        $renderer = $this->getRenderer();
-        return $renderer->renderTemplate($myConfig->getTemplatePath($sTpl, false), $this->getViewData());
     }
 
     /**

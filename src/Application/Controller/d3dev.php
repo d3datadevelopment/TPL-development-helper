@@ -103,27 +103,4 @@ class d3dev extends FrontendController
         echo $oEmail->d3GetOrderMailContent($oOrder, $sTpl);
         die();
     }
-
-    /**
-     * @throws DatabaseConnectionException
-     */
-    public function showInquiryMailContent()
-    {
-        if (Registry::getConfig()->getActiveShop()->isProductiveMode()
-            || false == Registry::getConfig()->getConfigParam(ModuleCore\d3_dev_conf::OPTION_SHOWMAILSINBROWSER)
-        ) {
-            Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl().'index.php?cl=start');
-        }
-
-        $sTpl = Registry::getRequest()->getRequestEscapedParameter('type');
-
-        /** @var ModuleController\d3_dev_thankyou $oThankyou */
-        $oThankyou = oxNew(ThankYouController::class);
-        $oOrder = $oThankyou->d3GetLastInquiry();
-
-        /** @var ModuleCore\d3_dev_oxemail $oEmail */
-        $oEmail = oxNew(Email::class);
-        echo $oEmail->d3GetInquiryMailContent($oOrder, $sTpl);
-        die();
-    }
 }

@@ -70,7 +70,7 @@ class d3_dev_oxbasket extends d3_dev_oxbasket_parent
     /**
      * @param OrderArticle $oOrderArticle
      *
-     * @return null
+     * @return d3_dev_oxbasketitem|null
      * @throws oxArticleInputException
      * @throws oxNoArticleException
      */
