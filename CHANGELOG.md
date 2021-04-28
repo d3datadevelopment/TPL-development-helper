@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 ## 3.0.0.1 (2021-04-28)
 ### Changed
 - Modul verwendbar in OXID 6.3
+### Fixed
+- falsche prepared statement Kombination korrigiert
 
 ---
 
