@@ -58,12 +58,16 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
     {
         $orderNr = (int) Registry::getRequest()->getRequestEscapedParameter('d3ordernr');
         $sWhere = 1;
+        $parameters = [];
         if ($orderNr) {
             $sWhere = ' oxordernr = ? ';
+            $parameters[] = $orderNr;
         }
-        $parameters = [$orderNr];
 
-        $sSelect = "SELECT oxid FROM ".oxNew(Order::class)->getViewName()." WHERE ".$sWhere." ORDER BY oxorderdate DESC LIMIT 1";
+        $sSelect = "SELECT oxid FROM ".oxNew(Order::class)->getViewName()." WHERE ".
+            "oxuserid != '' AND ".
+            "oxshopid = ".Registry::getConfig()->getShopId()." AND ".
+            $sWhere." ORDER BY oxorderdate DESC LIMIT 1";
 
         return DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getOne($sSelect, $parameters);
     }
