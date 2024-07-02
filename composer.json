@@ -27,7 +27,8 @@
     "GPL-3.0-or-later"
   ],
   "require": {
-    "oxid-esales/oxideshop-ce": "^7.0"
+    "oxid-esales/oxideshop-ce": "^7.0",
+    "guzzlehttp/psr7": "^2.6"
   },
   "autoload": {
     "psr-4": {

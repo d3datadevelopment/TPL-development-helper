@@ -54,13 +54,13 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
         $myConfig = Registry::getConfig();
 
-        $oShop = $this->_getShop();
+        $oShop = $this->getShop();
 
         // cleanup
-        $this->_clearMailer();
+        $this->clearMailer();
 
         // add user defined stuff if there is any
-        $oOrder = $this->_addUserInfoOrderEMail($oOrder);
+        $oOrder = $this->addUserInfoOrderEMail($oOrder);
 
         $oUser = $oOrder->getOrderUser();
         $this->setUser($oUser);
@@ -75,7 +75,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         // if running shop language is different from admin lang. set in config
         // we have to load shop in config language
         if ($oShop->getLanguage() != $iOrderLang) {
-            $oShop = $this->_getShop($iOrderLang);
+            $oShop = $this->getShop($iOrderLang);
         }
 
         $this->setSmtp($oShop);
@@ -84,9 +84,14 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $this->setViewData("order", $oOrder);
 
         // Process view data array through oxoutput processor
-        $this->_processViewArray();
+        $this->processViewArray();
 
         $renderer = $this->getRenderer();
+
+        $templateExtension = ContainerFactory::getInstance()->getContainer()
+            ->getParameter('oxid_esales.templating.engine_template_extension');
+        $sTpl .= '.'.$templateExtension;
+
         return $renderer->renderTemplate($myConfig->getTemplatePath($sTpl, false), $this->getViewData());
     }
 
@@ -100,7 +105,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
     {
         $bridge = ContainerFactory::getInstance()->getContainer()
             ->get(TemplateRendererBridgeInterface::class);
-        $bridge->setEngine($this->_getSmarty());
+//        $bridge->setEngine($this->getSmarty());
 
         return $bridge->getTemplateRenderer();
     }

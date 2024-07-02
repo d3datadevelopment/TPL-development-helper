@@ -17,15 +17,17 @@
 
 namespace D3\Devhelper\Modules\Application\Model;
 
+use Doctrine\DBAL\Query\QueryBuilder;
 use oxarticleinputexception;
 use OxidEsales\Eshop\Application\Model\Basket;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\Voucher;
-use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
 use OxidEsales\Eshop\Core\Model\ListModel;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 use oxnoarticleexception;
 
 class d3_dev_oxorder extends d3_dev_oxorder_parent
@@ -36,7 +38,7 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
     public function d3DevGetOrderBasket()
     {
         /** @var d3_dev_oxbasket $oBasket */
-        $oBasket = $this->_getOrderBasket();
+        $oBasket = $this->getOrderBasket();
 
         // add this order articles to basket and recalculate basket
         $this->_d3AddOrderArticlesToBasket($oBasket, $this->getOrderArticles());
@@ -45,7 +47,7 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
         $oBasket->calculateBasket(true);
         $oBasket->d3ClearBasketItemArticles();
 
-        $this->_oPayment = $this->_setPayment($oBasket->getPaymentId());
+        $this->_oPayment = $this->setPayment($oBasket->getPaymentId());
 
         return $oBasket;
     }
@@ -56,20 +58,36 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
      */
     public function d3getLastOrderId()
     {
+        /** @var QueryBuilder $qb */
+        $qb = ContainerFactory::getInstance()->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
+        $qb->select('oxid')
+            ->from((oxNew(Order::class))->getViewName())
+            ->where(
+                $qb->expr()->and(
+                    $qb->expr()->eq(
+                        'oxuserid',
+                        $qb->createNamedParameter('')
+                    ),
+                    $qb->expr()->eq(
+                        'oxshopid',
+                        $qb->createNamedParameter(Registry::getConfig()->getShopId())
+                    )
+                )
+            )
+            ->orderBy('oxorderdate', 'DESC')
+            ->setMaxResults(1);
+
         $orderNr = (int) Registry::getRequest()->getRequestEscapedParameter('d3ordernr');
-        $sWhere = 1;
-        $parameters = [];
         if ($orderNr) {
-            $sWhere = ' oxordernr = ? ';
-            $parameters[] = $orderNr;
+            $qb->andWhere(
+                $qb->expr()->eq(
+                    'oxordernr',
+                    $orderNr
+                )
+            );
         }
 
-        $sSelect = "SELECT oxid FROM ".oxNew(Order::class)->getViewName()." WHERE ".
-            "oxuserid != '' AND ".
-            "oxshopid = ".Registry::getConfig()->getShopId()." AND ".
-            $sWhere." ORDER BY oxorderdate DESC LIMIT 1";
-
-        return DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getOne($sSelect, $parameters);
+        return $qb->execute()->fetchOne();
     }
 
     /**
@@ -102,12 +120,17 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
      */
     protected function _d3AddVouchers()
     {
-        $sSelect = "SELECT oxid FROM ".oxNew(Voucher::class)->getViewName()." WHERE oxorderid = ?";
-
-        $aResult = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getAll(
-            $sSelect,
-            [$this->getId()]
-        );
+        /** @var QueryBuilder $qb */
+        $qb = ContainerFactory::getInstance()->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
+        $qb->select('oxid')
+            ->from((oxNew(Voucher::class))->getViewName())
+            ->where(
+                 $qb->expr()->eq(
+                     'oxorderid',
+                     $qb->createNamedParameter($this->getId())
+                 )
+            );
+        $aResult = $qb->execute()->fetchAllAssociative();
 
         foreach ($aResult as $aFields) {
             $oVoucher = oxNew(Voucher::class);
