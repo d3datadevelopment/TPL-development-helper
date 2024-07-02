@@ -26,18 +26,12 @@
   "license": [
     "GPL-3.0-or-later"
   ],
-  "extra": {
-    "oxideshop": {
-      "source-directory": "/src",
-      "target-directory": "d3/devhelper"
-    }
-  },
   "require": {
-    "oxid-esales/oxideshop-ce": "6.5 - 6.14"
+    "oxid-esales/oxideshop-ce": "^7.0"
   },
   "autoload": {
     "psr-4": {
-      "D3\\Devhelper\\": "../../../source/modules/d3/devhelper"
+      "D3\\Devhelper\\": ""
     }
   }
 }

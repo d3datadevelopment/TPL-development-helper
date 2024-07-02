@@ -2,13 +2,14 @@
 
 ## Versionsübersicht:
 
-* 3.x - OXID 6.2 bis 6.3
+* 4.x - OXID 7.0 bis 7.1
+* 3.x - OXID 6.2 bis 6.5
 * 2.x - OXID 6.0 bis 6.1
 * 1.x - bis OXID 4.10 / 5.3
 
 ## Installation
 
-    composer require d3/devhelper:"^3.0"
+    composer require d3/devhelper:"^4.0"
 
 ## Features
     
