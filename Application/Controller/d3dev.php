@@ -118,7 +118,7 @@ class d3dev extends FrontendController
             http_response_code(401);
         } catch (Exception $exception) {
             echo $exception->getMessage();
-            http_response_code(400);
+            http_response_code(500);
         } finally {
             Registry::getConfig()->pageClose();
             die();
