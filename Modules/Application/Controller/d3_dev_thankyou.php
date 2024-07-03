@@ -3,8 +3,12 @@
 namespace D3\Devhelper\Modules\Application\Controller;
 
 // .../?cl=thankyou[&d3orderid=23]
+use D3\Devhelper\Application\Model\Exception\NoOrderFoundException;
+use D3\Devhelper\Application\Model\Exception\UnauthorisedException;
 use D3\Devhelper\Modules\Application\Model\d3_dev_oxorder;
 use D3\Devhelper\Modules\Core\d3_dev_conf;
+use Doctrine\DBAL\Driver\Exception as DBALDriverException;
+use Doctrine\DBAL\Exception as DBALException;
 use Exception;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
@@ -12,7 +16,8 @@ use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
 use OxidEsales\Eshop\Core\Exception\UserException;
 use OxidEsales\Eshop\Core\Registry;
-use oxOrder;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * This Software is the property of Data Development and is protected
@@ -42,7 +47,7 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
         parent::init();
 
         if (Registry::getRequest()->getRequestEscapedParameter("d3dev")
-            && false == (bool) Registry::getConfig()->getActiveShop()->isProductiveMode()
+            && !Registry::getConfig()->getActiveShop()->isProductiveMode()
             && Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_PREVENTDELBASKET)
         ) {
             Registry::getSession()->setVariable( 'sess_challenge', $sSessChallenge );
@@ -60,9 +65,9 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
      */
     public function d3DevCanShowThankyou()
     {
-        return Registry::getRequest()->getRequestEscapedParameter("d3dev")
-        && false == (bool) Registry::getConfig()->getActiveShop()->isProductiveMode()
-        && Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_SHOWTHANKYOU);
+        return Registry::getRequest()->getRequestEscapedParameter("d3dev") &&
+               !Registry::getConfig()->getActiveShop()->isProductiveMode() &&
+               Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_SHOWTHANKYOU);
     }
 
     /**
@@ -128,7 +133,7 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
     }
 
     /**
-     * @return bool|d3_dev_oxorder|oxOrder
+     * @return bool|d3_dev_oxorder|Order
      * @throws DatabaseConnectionException
      * @throws DatabaseErrorException
      */
@@ -155,14 +160,19 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
     }
 
     /**
-     * @return bool|d3_dev_oxorder
+     * @return d3_dev_oxorder
      * @throws DatabaseConnectionException
      * @throws DatabaseErrorException
+     * @throws NoOrderFoundException
+     * @throws DBALDriverException
+     * @throws DBALException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    public function d3GetLastOrder()
+    public function d3GetLastOrder(): d3_dev_oxorder
     {
         if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
-            return false;
+            throw oxNew(UnauthorisedException::class);
         }
 
         /** @var d3_dev_oxorder $oOrder */

@@ -28,8 +28,8 @@ class d3_dev_oxbasket extends d3_dev_oxbasket_parent
 {
     public function deleteBasket()
     {
-        if (Registry::getConfig()->getActiveShop()->isProductiveMode()
-            || false == Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_PREVENTDELBASKET)
+        if ( Registry::getConfig()->getActiveShop()->isProductiveMode()
+             || ! Registry::getConfig()->getConfigParam( d3_dev_conf::OPTION_PREVENTDELBASKET )
         ) {
             parent::deleteBasket();
         }

@@ -17,6 +17,7 @@
 
 namespace D3\Devhelper\Modules\Core;
 
+use D3\Devhelper\Application\Model\Exception\UnauthorisedException;
 use D3\Devhelper\Modules\Application\Model as ModuleModel;
 use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Registry;
@@ -34,7 +35,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
     public function d3GetOrderMailContent($oOrder, $sType)
     {
         if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
-            return '';
+            throw oxNew(UnauthorisedException::class);
         }
 
         switch (strtolower($sType)) {
@@ -127,29 +128,6 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
             $aCc[] = $aRecInfo;
         }
         return $aCc;
-    }
-
-    /**
-     * @return bool
-     * @throws StandardException
-     */
-    protected function _sendMail()
-    {
-        if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
-            return parent::_sendMail();
-        }
-
-        $this->d3clearRecipients();
-        $this->d3clearReplies();
-        $this->d3clearReplyTo();
-        $this->d3clearCC();
-        $this->d3clearBCC();
-
-        if (count($this->getRecipient())) {
-            return parent::_sendMail();
-        }
-
-        return true;
     }
 
     /**

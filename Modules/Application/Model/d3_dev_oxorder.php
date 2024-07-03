@@ -17,6 +17,9 @@
 
 namespace D3\Devhelper\Modules\Application\Model;
 
+use D3\Devhelper\Application\Model\Exception\NoOrderFoundException;
+use Doctrine\DBAL\Driver\Exception as DBALDriverException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Query\QueryBuilder;
 use oxarticleinputexception;
 use OxidEsales\Eshop\Application\Model\Basket;
@@ -24,11 +27,14 @@ use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\Voucher;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
+use OxidEsales\Eshop\Core\Exception\SystemComponentException;
 use OxidEsales\Eshop\Core\Model\ListModel;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 use oxnoarticleexception;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class d3_dev_oxorder extends d3_dev_oxorder_parent
 {
@@ -53,10 +59,13 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
     }
 
     /**
-     * @return string
-     * @throws DatabaseConnectionException
+     * @return false|string
+     * @throws ContainerExceptionInterface
+     * @throws DBALException
+     * @throws DBALDriverException
+     * @throws NotFoundExceptionInterface
      */
-    public function d3getLastOrderId()
+    public function d3getLastOrderId(): false|string
     {
         /** @var QueryBuilder $qb */
         $qb = ContainerFactory::getInstance()->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
@@ -64,7 +73,7 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
             ->from((oxNew(Order::class))->getViewName())
             ->where(
                 $qb->expr()->and(
-                    $qb->expr()->eq(
+                    $qb->expr()->neq(
                         'oxuserid',
                         $qb->createNamedParameter('')
                     ),
@@ -91,13 +100,22 @@ class d3_dev_oxorder extends d3_dev_oxorder_parent
     }
 
     /**
+     * @throws ContainerExceptionInterface
+     * @throws DBALDriverException
+     * @throws DBALException
      * @throws DatabaseConnectionException
      * @throws DatabaseErrorException
+     * @throws NoOrderFoundException
+     * @throws NotFoundExceptionInterface
      */
-    public function d3getLastOrder()
+    public function d3getLastOrder(): void
     {
-        $this->load($this->d3getLastOrderId());
-        $this->_d3AddVouchers();
+        if ($orderId = $this->d3getLastOrderId()) {
+            $this->load($orderId);
+            $this->_d3AddVouchers();
+        } else {
+            throw new NoOrderFoundException();
+        }
     }
 
     /**

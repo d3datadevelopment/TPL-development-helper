@@ -2,21 +2,23 @@
 
 namespace D3\Devhelper\Application\Controller;
 
+use D3\Devhelper\Application\Model\Exception\UnauthorisedException;
 use D3\Devhelper\Modules\Application\Controller as ModuleController;
 use D3\Devhelper\Modules\Core as ModuleCore;
+use Doctrine\DBAL\Driver\Exception as DBALDriverException;
 use Exception;
 use GuzzleHttp\Psr7\ServerRequest;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
 use OxidEsales\Eshop\Application\Controller\ThankYouController;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Email;
-use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
-use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
 use OxidEsales\Eshop\Core\Exception\UserException;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingService;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingServiceInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * This Software is the property of Data Development and is protected
@@ -84,30 +86,42 @@ class d3dev extends FrontendController
     }
 
     /**
-     * @throws DatabaseConnectionException
-     * @throws DatabaseErrorException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws DBALDriverException
      */
-    public function showOrderMailContent()
+    public function showOrderMailContent(): void
     {
-        header('Content-type: text/html; charset='.Registry::getLang()->translateString('charset'));
-        /** @var ModuleSettingService $moduleSettingService */
-        $moduleSettingService = ContainerFactory::getInstance()->getContainer()->get(ModuleSettingServiceInterface::class);
+        try {
+            header( 'Content-type: text/html; charset=' . Registry::getLang()->translateString( 'charset' ) );
+            /** @var ModuleSettingService $moduleSettingService */
+            $moduleSettingService = ContainerFactory::getInstance()->getContainer()->get( ModuleSettingServiceInterface::class );
 
-        if ( Registry::getConfig()->getActiveShop()->isProductiveMode()
-             || ! $moduleSettingService->getBoolean( ModuleCore\d3_dev_conf::OPTION_SHOWMAILSINBROWSER, 'd3dev' )
-        ) {
-            Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl().'index.php?cl=start');
+            if ( Registry::getConfig()->getActiveShop()->isProductiveMode() ||
+                 ! $moduleSettingService->getBoolean( ModuleCore\d3_dev_conf::OPTION_SHOWMAILSINBROWSER, 'd3dev' )
+            ) {
+                throw oxNew(UnauthorisedException::class);
+            }
+
+            $sTpl = Registry::getRequest()->getRequestEscapedParameter( 'type' );
+
+            /** @var ModuleController\d3_dev_thankyou $oThankyou */
+            $oThankyou = oxNew( ThankYouController::class );
+            $oOrder    = $oThankyou->d3GetLastOrder();
+
+            /** @var ModuleCore\d3_dev_oxemail $oEmail */
+            $oEmail = oxNew( Email::class );
+            echo $oEmail->d3GetOrderMailContent( $oOrder, $sTpl );
+            http_response_code( 200 );
+        } catch (UnauthorisedException $exception) {
+            echo $exception->getMessage();
+            http_response_code(401);
+        } catch (Exception $exception) {
+            echo $exception->getMessage();
+            http_response_code(400);
+        } finally {
+            Registry::getConfig()->pageClose();
+            die();
         }
-
-        $sTpl = Registry::getRequest()->getRequestEscapedParameter('type');
-
-        /** @var ModuleController\d3_dev_thankyou $oThankyou */
-        $oThankyou = oxNew(ThankYouController::class);
-        $oOrder = $oThankyou->d3GetLastOrder();
-
-        /** @var ModuleCore\d3_dev_oxemail $oEmail */
-        $oEmail = oxNew(Email::class);
-        echo $oEmail->d3GetOrderMailContent($oOrder, $sTpl);
-        die();
     }
 }
