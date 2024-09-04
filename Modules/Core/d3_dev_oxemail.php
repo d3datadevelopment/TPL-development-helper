@@ -1,22 +1,21 @@
 <?php
 
 /**
- * This Software is the property of Data Development and is protected
- * by copyright law - it is NOT Freeware.
+ * Copyright (c) D3 Data Development (Inh. Thomas Dartsch)
  *
- * Any unauthorized use of this software without a valid license
- * is a violation of the license agreement and will be prosecuted by
- * civil and criminal law.
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
  *
- * http://www.shopmodule.com
+ * https://www.d3data.de
  *
- * @copyright © D³ Data Development, Thomas Dartsch
- * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
- * @link      http://www.oxidmodule.com
+ * @copyright (C) D3 Data Development (Inh. Thomas Dartsch)
+ * @author    D3 Data Development - Daniel Seifert <info@shopmodule.com>
+ * @link      https://www.oxidmodule.com
  */
 
 namespace D3\Devhelper\Modules\Core;
 
+use D3\Devhelper\Application\Model\Exception\UnauthorisedException;
 use D3\Devhelper\Modules\Application\Model as ModuleModel;
 use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Registry;
@@ -34,7 +33,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
     public function d3GetOrderMailContent($oOrder, $sType)
     {
         if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
-            return '';
+            throw oxNew(UnauthorisedException::class);
         }
 
         switch (strtolower($sType)) {
@@ -54,13 +53,13 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
         $myConfig = Registry::getConfig();
 
-        $oShop = $this->_getShop();
+        $oShop = $this->getShop();
 
         // cleanup
-        $this->_clearMailer();
+        $this->clearMailer();
 
         // add user defined stuff if there is any
-        $oOrder = $this->_addUserInfoOrderEMail($oOrder);
+        $oOrder = $this->addUserInfoOrderEMail($oOrder);
 
         $oUser = $oOrder->getOrderUser();
         $this->setUser($oUser);
@@ -75,7 +74,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         // if running shop language is different from admin lang. set in config
         // we have to load shop in config language
         if ($oShop->getLanguage() != $iOrderLang) {
-            $oShop = $this->_getShop($iOrderLang);
+            $oShop = $this->getShop($iOrderLang);
         }
 
         $this->setSmtp($oShop);
@@ -84,9 +83,14 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $this->setViewData("order", $oOrder);
 
         // Process view data array through oxoutput processor
-        $this->_processViewArray();
+        $this->processViewArray();
 
         $renderer = $this->getRenderer();
+
+        $templateExtension = ContainerFactory::getInstance()->getContainer()
+            ->getParameter('oxid_esales.templating.engine_template_extension');
+        $sTpl .= '.'.$templateExtension;
+
         return $renderer->renderTemplate($myConfig->getTemplatePath($sTpl, false), $this->getViewData());
     }
 
@@ -100,7 +104,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
     {
         $bridge = ContainerFactory::getInstance()->getContainer()
             ->get(TemplateRendererBridgeInterface::class);
-        $bridge->setEngine($this->_getSmarty());
+//        $bridge->setEngine($this->getSmarty());
 
         return $bridge->getTemplateRenderer();
     }
@@ -128,29 +132,6 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
      * @return bool
      * @throws StandardException
      */
-    protected function _sendMail()
-    {
-        if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
-            return parent::_sendMail();
-        }
-
-        $this->d3clearRecipients();
-        $this->d3clearReplies();
-        $this->d3clearReplyTo();
-        $this->d3clearCC();
-        $this->d3clearBCC();
-
-        if (count($this->getRecipient())) {
-            return parent::_sendMail();
-        }
-
-        return true;
-    }
-
-    /**
-     * @return bool
-     * @throws StandardException
-     */
     protected function sendMail()
     {
         if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
@@ -172,7 +153,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     public function d3clearRecipients()
     {
-        $aRecipients = array();
+        $aRecipients = [];
         if (is_array($this->_aRecipients) && count($this->_aRecipients)) {
             foreach ($this->_aRecipients as $aRecInfo) {
                 $aRecipients = $this->d3ChangeRecipient($aRecInfo, $aRecipients);
@@ -183,7 +164,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     public function d3clearReplies()
     {
-        $aRecipients = array();
+        $aRecipients = [];
         if (is_array($this->_aReplies) && count($this->_aReplies)) {
             foreach ($this->_aReplies as $aRecInfo) {
                 $aRecipients = $this->d3ChangeRecipient($aRecInfo, $aRecipients);
@@ -194,7 +175,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     public function d3clearReplyTo()
     {
-        $aRecipients = array();
+        $aRecipients = [];
         if (is_array($this->ReplyTo) && count($this->ReplyTo)) {
             foreach ($this->ReplyTo as $aRecInfo) {
                 $aRecipients = $this->d3ChangeRecipient($aRecInfo, $aRecipients);
@@ -205,7 +186,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     public function d3clearCC()
     {
-        $aCc = array();
+        $aCc = [];
         if (is_array($this->cc) && count($this->cc)) {
             foreach ($this->cc as $aRecInfo) {
                 $aCc = $this->d3ChangeRecipient($aRecInfo, $aCc);
@@ -217,7 +198,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     public function d3clearBCC()
     {
-        $aCc = array();
+        $aCc = [];
         if (is_array($this->bcc) && count($this->bcc)) {
             foreach ($this->bcc as $aRecInfo) {
                 $aCc = $this->d3ChangeRecipient($aRecInfo, $aCc);

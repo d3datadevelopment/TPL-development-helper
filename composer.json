@@ -26,18 +26,19 @@
   "license": [
     "GPL-3.0-or-later"
   ],
-  "extra": {
-    "oxideshop": {
-      "source-directory": "/src",
-      "target-directory": "d3/devhelper"
-    }
-  },
   "require": {
-    "oxid-esales/oxideshop-ce": "6.5 - 6.9"
+    "oxid-esales/oxideshop-ce": "^7.0",
+    "guzzlehttp/psr7": "^2.6"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "~3.13.0"
   },
   "autoload": {
     "psr-4": {
-      "D3\\Devhelper\\": "../../../source/modules/d3/devhelper"
+      "D3\\Devhelper\\": ""
     }
+  },
+  "scripts": {
+    "php-cs-fixer": "./vendor/bin/php-cs-fixer fix --config=vendor/d3/devhelper/.php-cs-fixer.php"
   }
 }

@@ -1,18 +1,16 @@
 <?php
 
 /**
- * This Software is the property of Data Development and is protected
- * by copyright law - it is NOT Freeware.
+ * Copyright (c) D3 Data Development (Inh. Thomas Dartsch)
  *
- * Any unauthorized use of this software without a valid license
- * is a violation of the license agreement and will be prosecuted by
- * civil and criminal law.
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
  *
- * http://www.shopmodule.com
+ * https://www.d3data.de
  *
- * @copyright © D³ Data Development, Thomas Dartsch
- * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
- * @link      http://www.oxidmodule.com
+ * @copyright (C) D3 Data Development (Inh. Thomas Dartsch)
+ * @author    D3 Data Development - Daniel Seifert <info@shopmodule.com>
+ * @link      https://www.oxidmodule.com
  */
 
 use D3\Devhelper\Application\Controller\d3dev;
@@ -31,16 +29,16 @@ $sMetadataVersion = '2.1';
 $sLogo = '<img src="https://logos.oxidmodule.com/d3logo.svg" alt="(D3)" style="height:1em;width:1em"> ';
 
 $shopUrl = function_exists('oxNew') ? Registry::getConfig()->getCurrentShopUrl(false) : '../';
-    
+
 
 /**
  * Module information
  */
-$aModule = array(
+$aModule = [
     'id'           => 'd3dev',
     'title'        => [
         'de'    => $sLogo . 'TPL Entwicklerwerkzeug',
-        'en'    => $sLogo . 'TPL Development Tool'
+        'en'    => $sLogo . 'TPL Development Tool',
     ],
     'description'  => [
         'de'    => '<script type="text/javascript"><!--
@@ -68,7 +66,7 @@ $aModule = array(
             '</ul><br>Jede dieser Optionen muss aus Sicherheitsgr&uuml;nden unter "Einstell." aktiviert werden. Weiterhin darf der Shop nicht im Produktivmodus betrieben werden.<br><br>'.
             '* Ordernummer an URL erg&auml;nzen, wenn bestimmte Bestellungen angezeigt werden sollen',
         'en'    => ''],
-    'version'      => '3.0.0.1',
+    'version'      => '4.0.0.0',
     'author'       => 'D&sup3; Data Development (Inh.: Thomas Dartsch)',
     'email'        => 'support@shopmodule.com',
     'url'          => 'http://www.oxidmodule.com/',
@@ -91,31 +89,31 @@ $aModule = array(
             'group' => 'd3dev_order',
             'name' => ModuleCore\d3_dev_conf::OPTION_PREVENTDELBASKET,
             'type' => 'bool',
-            'value' => 'false'
+            'value' => 'false',
         ],
         [
             'group' => 'd3dev_order',
             'name' => ModuleCore\d3_dev_conf::OPTION_SHOWTHANKYOU,
             'type' => 'bool',
-            'value' => 'false'
+            'value' => 'false',
         ],
         [
             'group' => 'd3dev_mail',
             'name' => ModuleCore\d3_dev_conf::OPTION_SHOWMAILSINBROWSER,
             'type' => 'bool',
-            'value' => 'false'
+            'value' => 'false',
         ],
         [
             'group' => 'd3dev_mailblock',
             'name' => ModuleCore\d3_dev_conf::OPTION_BLOCKMAIL,
             'type' => 'bool',
-            'value' => 'false'
+            'value' => 'false',
         ],
         [
             'group' => 'd3dev_mailblock',
             'name' => ModuleCore\d3_dev_conf::OPTION_REDIRECTMAIL,
             'type' => 'str',
-            'value' => 'd3test1@shopmodule.com'
+            'value' => 'd3test1@shopmodule.com',
         ],
     ],
-);
+];
