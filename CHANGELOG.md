@@ -3,6 +3,27 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 4.0.0.0 (2024-09-04)
+### Added
+- Modul verwendbar in OXID 7.x
+
+### Removed
+- Modul verwendbar in OXID < 7
+
+---
+
+## 3.0.3.0 (2023-05-12)
+### Changed
+- Modul verwendbar in OXID 6.5.2
+
+---
+
+## 3.0.2.0 (2021-08-19)
+### Changed
+- Modul verwendbar in OXID 6.3.1
+
+---
+
 ## 3.0.0.1 (2021-04-28)
 ### Changed
 - Modul verwendbar in OXID 6.3
