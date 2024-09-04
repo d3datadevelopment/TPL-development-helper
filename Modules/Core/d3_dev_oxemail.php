@@ -1,18 +1,16 @@
 <?php
 
 /**
- * This Software is the property of Data Development and is protected
- * by copyright law - it is NOT Freeware.
+ * Copyright (c) D3 Data Development (Inh. Thomas Dartsch)
  *
- * Any unauthorized use of this software without a valid license
- * is a violation of the license agreement and will be prosecuted by
- * civil and criminal law.
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
  *
- * http://www.shopmodule.com
+ * https://www.d3data.de
  *
- * @copyright © D³ Data Development, Thomas Dartsch
- * @author    D³ Data Development - Daniel Seifert <info@shopmodule.com>
- * @link      http://www.oxidmodule.com
+ * @copyright (C) D3 Data Development (Inh. Thomas Dartsch)
+ * @author    D3 Data Development - Daniel Seifert <info@shopmodule.com>
+ * @link      https://www.oxidmodule.com
  */
 
 namespace D3\Devhelper\Modules\Core;
@@ -155,7 +153,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     public function d3clearRecipients()
     {
-        $aRecipients = array();
+        $aRecipients = [];
         if (is_array($this->_aRecipients) && count($this->_aRecipients)) {
             foreach ($this->_aRecipients as $aRecInfo) {
                 $aRecipients = $this->d3ChangeRecipient($aRecInfo, $aRecipients);
@@ -166,7 +164,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     public function d3clearReplies()
     {
-        $aRecipients = array();
+        $aRecipients = [];
         if (is_array($this->_aReplies) && count($this->_aReplies)) {
             foreach ($this->_aReplies as $aRecInfo) {
                 $aRecipients = $this->d3ChangeRecipient($aRecInfo, $aRecipients);
@@ -177,7 +175,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     public function d3clearReplyTo()
     {
-        $aRecipients = array();
+        $aRecipients = [];
         if (is_array($this->ReplyTo) && count($this->ReplyTo)) {
             foreach ($this->ReplyTo as $aRecInfo) {
                 $aRecipients = $this->d3ChangeRecipient($aRecInfo, $aRecipients);
@@ -188,7 +186,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     public function d3clearCC()
     {
-        $aCc = array();
+        $aCc = [];
         if (is_array($this->cc) && count($this->cc)) {
             foreach ($this->cc as $aRecInfo) {
                 $aCc = $this->d3ChangeRecipient($aRecInfo, $aCc);
@@ -200,7 +198,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
     public function d3clearBCC()
     {
-        $aCc = array();
+        $aCc = [];
         if (is_array($this->bcc) && count($this->bcc)) {
             foreach ($this->bcc as $aRecInfo) {
                 $aCc = $this->d3ChangeRecipient($aRecInfo, $aCc);

@@ -1,18 +1,16 @@
 <?php
 
 /**
- * TPL Development Tool
- * This Software is the property of Data Development and is protected
- * by copyright law - it is NOT Freeware.
- * Any unauthorized use of this software without a valid license
- * is a violation of the license agreement and will be prosecuted by
- * civil and criminal law.
- * http://www.shopmodule.com
+ * Copyright (c) D3 Data Development (Inh. Thomas Dartsch)
  *
- * @copyright © D³ Data Development, Thomas Dartsch
- * @package   OrderManager
- * @author    D³ Data Development - Daniel Seifert <support@shopmodule.com>
- * @link      http://www.oxidmodule.com
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ *
+ * https://www.d3data.de
+ *
+ * @copyright (C) D3 Data Development (Inh. Thomas Dartsch)
+ * @author    D3 Data Development - Daniel Seifert <info@shopmodule.com>
+ * @link      https://www.oxidmodule.com
  */
 
 $sLangName = "Deutsch";
@@ -20,7 +18,7 @@ $sLangName = "Deutsch";
 // -------------------------------
 // RESOURCE IDENTITFIER = STRING
 // -------------------------------
-$aLang = array(
+$aLang = [
     //Navigation
     'charset'                                                   => 'UTF-8',
 
@@ -54,4 +52,4 @@ $aLang = array(
     'SHOP_MODULE_sD3DevRedirectMail'                            => 'versendete Mails an diese Adresse umleiten',
     'HELP_SHOP_MODULE_sD3DevRedirectMail'                       => 'Wenn leer, erfolgt keine Umleitung. Ohne '.
         'zusätzliche Blockieroption werden die Mails dann an den original Empfänger gesendet.',
-);
+];
