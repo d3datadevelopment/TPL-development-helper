@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Copyright (c) D3 Data Development (Inh. Thomas Dartsch)
- *
- * For the full copyright and license information, please view
- * the LICENSE file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  *
  * https://www.d3data.de
  *
@@ -13,12 +11,9 @@
  * @link      https://www.oxidmodule.com
  */
 
-$sLangName = "Deutsch";
+declare(strict_types=1);
 
-// -------------------------------
-// RESOURCE IDENTITFIER = STRING
-// -------------------------------
-$aLang = [
+return [
     //Navigation
     'charset'                                                   => 'UTF-8',
 
