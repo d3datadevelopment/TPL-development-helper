@@ -109,7 +109,10 @@ class d3dev extends FrontendController
 
             /** @var ModuleCore\d3_dev_oxemail $oEmail */
             $oEmail = oxNew(Email::class);
-            echo $oEmail->d3GetOrderMailContent($oOrder, $sTpl);
+            echo $this->wrapPlainContent(
+                $sTpl,
+                $oEmail->d3GetOrderMailContent($oOrder, $sTpl)
+            );
             http_response_code(200);
         } catch (UnauthorisedException $exception) {
             echo $exception->getMessage();
@@ -121,5 +124,19 @@ class d3dev extends FrontendController
             Registry::getConfig()->pageClose();
             die();
         }
+    }
+
+    protected function wrapPlainContent($type, $mailContent)
+    {
+        if (stristr($type, 'plain')){
+            return sprintf(
+                <<<TEXTAREA
+<textarea style="width: 100%%; height: 100%%">%s</textarea>
+TEXTAREA,
+                $mailContent
+            );
+        }
+
+        return $mailContent;
     }
 }
