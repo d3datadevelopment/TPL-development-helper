@@ -29,6 +29,8 @@ use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
 use OxidEsales\Eshop\Core\Exception\UserException;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingServiceInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
@@ -44,9 +46,14 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
 
         parent::init();
 
+        $container = ContainerFactory::getInstance()->getContainer();
+
+        /** @var ModuleSettingServiceInterface $moduleSettings */
+        $moduleSettings = $container->get(ModuleSettingServiceInterface::class);
+
         if (Registry::getRequest()->getRequestEscapedParameter("d3dev")
             && !Registry::getConfig()->getActiveShop()->isProductiveMode()
-            && Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_PREVENTDELBASKET)
+            && $moduleSettings->getBoolean(d3_dev_conf::OPTION_PREVENTDELBASKET, 'd3dev')
         ) {
             Registry::getSession()->setVariable('sess_challenge', $sSessChallenge);
         }
@@ -63,9 +70,14 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
      */
     public function d3DevCanShowThankyou()
     {
+        $container = ContainerFactory::getInstance()->getContainer();
+
+        /** @var ModuleSettingServiceInterface $moduleSettings */
+        $moduleSettings = $container->get(ModuleSettingServiceInterface::class);
+
         return Registry::getRequest()->getRequestEscapedParameter("d3dev") &&
                !Registry::getConfig()->getActiveShop()->isProductiveMode() &&
-               Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_SHOWTHANKYOU);
+               $moduleSettings->getBoolean(d3_dev_conf::OPTION_SHOWTHANKYOU, 'd3dev');
     }
 
     /**
@@ -138,7 +150,7 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
     {
         $oOrder = parent::getOrder();
 
-        if ((false == $oOrder || !$oOrder->getFieldData('oxordernr'))
+        if ((!$oOrder || !$oOrder->getFieldData('oxordernr'))
             && $this->d3DevCanShowThankyou()
         ) {
             try {

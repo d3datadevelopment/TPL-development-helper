@@ -20,6 +20,8 @@ use D3\Devhelper\Modules\Application\Model as ModuleModel;
 use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingService;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingServiceInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererBridgeInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererInterface;
 
@@ -50,8 +52,6 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
             default:
                 $sTpl = $this->_sOrderUserTemplate;
         }
-
-        $myConfig = Registry::getConfig();
 
         $oShop = $this->getShop();
 
@@ -86,12 +86,7 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
         $this->processViewArray();
 
         $renderer = $this->getRenderer();
-
-        $templateExtension = ContainerFactory::getInstance()->getContainer()
-            ->getParameter('oxid_esales.templating.engine_template_extension');
-        $sTpl .= '.'.$templateExtension;
-
-        return $renderer->renderTemplate($myConfig->getTemplatePath($sTpl, false), $this->getViewData());
+        return $renderer->renderTemplate($sTpl, $this->getViewData());
     }
 
     /**
@@ -215,10 +210,14 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
      */
     public function getNewRecipient($sMailAddress)
     {
-        if (Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_BLOCKMAIL)) {
+        /** @var ModuleSettingService $moduleSettingService */
+        $moduleSettingService = ContainerFactory::getInstance()->getContainer()->get(ModuleSettingServiceInterface::class);
+        $moduleSettingService->getString(d3_dev_conf::OPTION_REDIRECTMAIL, 'd3dev')->toString();
+
+        if ($moduleSettingService->getBoolean(d3_dev_conf::OPTION_BLOCKMAIL, 'd3dev')) {
             return false;
-        } elseif (Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_REDIRECTMAIL)) {
-            return trim(Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_REDIRECTMAIL));
+        } elseif (strlen(trim($moduleSettingService->getString(d3_dev_conf::OPTION_REDIRECTMAIL, 'd3dev')->toString()))) {
+            return trim($moduleSettingService->getString(d3_dev_conf::OPTION_REDIRECTMAIL, 'd3dev')->toString());
         }
 
         return $sMailAddress;

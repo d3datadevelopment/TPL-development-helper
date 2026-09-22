@@ -20,14 +20,20 @@ use oxArticleInputException;
 use OxidEsales\Eshop\Application\Model\BasketItem;
 use OxidEsales\Eshop\Application\Model\OrderArticle;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingService;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingServiceInterface;
 use oxNoArticleException;
 
 class d3_dev_oxbasket extends d3_dev_oxbasket_parent
 {
     public function deleteBasket()
     {
+        /** @var ModuleSettingService $moduleSettingService */
+        $moduleSettingService = ContainerFactory::getInstance()->getContainer()->get(ModuleSettingServiceInterface::class);
+
         if (Registry::getConfig()->getActiveShop()->isProductiveMode()
-             || ! Registry::getConfig()->getConfigParam(d3_dev_conf::OPTION_PREVENTDELBASKET)
+             || !$moduleSettingService->getBoolean(d3_dev_conf::OPTION_PREVENTDELBASKET, 'd3dev')
         ) {
             parent::deleteBasket();
         }
