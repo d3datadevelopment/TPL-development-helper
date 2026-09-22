@@ -4,7 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased](https://git.d3data.de/D3Public/devhelper/compare/4.0.0.0...rel_4.x)
+## [unreleased](https://git.d3data.de/D3Public/devhelper/compare/4.1.0.0...rel_4.x)
+
+## [4.1.0.0](https://git.d3data.de/D3Public/devhelper/compare/4.0.0.0...4.1.0.0) (2026-09-22)
+### Added
+- plain mail contents are displayed in a preformatted textarea element
+- add option translations for Smarty and Twig based themes
+
+### Changed
+- use current settings service for plugin options
 
 ## [4.0.0.0](https://git.d3data.de/D3Public/devhelper/compare/3.0.3.0...4.0.0.0) (2024-09-04)
 ### Added

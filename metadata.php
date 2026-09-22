@@ -26,7 +26,7 @@ use OxidEsales\Eshop\Core\Registry;
  * Metadata version
  */
 $sMetadataVersion = '2.1';
-$sLogo = '<img src="https://logos.oxidmodule.com/d3logo.svg" alt="(D3)" style="height:1em;width:1em"> ';
+$sLogo = '(D3) ';
 
 $shopUrl = function_exists('oxNew') ? Registry::getConfig()->getCurrentShopUrl(false) : '../';
 
@@ -66,7 +66,7 @@ $aModule = [
             '</ul><br>Jede dieser Optionen muss aus Sicherheitsgr&uuml;nden unter "Einstell." aktiviert werden. Weiterhin darf der Shop nicht im Produktivmodus betrieben werden.<br><br>'.
             '* Ordernummer an URL erg&auml;nzen, wenn bestimmte Bestellungen angezeigt werden sollen',
         'en'    => ''],
-    'version'      => '4.0.0.0',
+    'version'      => '4.1.0.0',
     'author'       => 'D&sup3; Data Development (Inh.: Thomas Dartsch)',
     'email'        => 'support@shopmodule.com',
     'url'          => 'http://www.oxidmodule.com/',
