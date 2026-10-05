@@ -45,41 +45,32 @@ class d3dev extends FrontendController
     protected function _authenticate(): void
     {
         try {
-            $sUser = Registry::getRequest()->getRequestEscapedParameter('usr');
-            $sPassword = Registry::getRequest()->getRequestEscapedParameter('pwd');
+            $request = ServerRequest::fromGlobals();
+            $serverParams = $request->getServerParams();
+            $sUser = $serverParams['PHP_AUTH_USER'] ?? null;
+            $sPassword = $serverParams['PHP_AUTH_PW'] ?? null;
 
             if (!$sUser || !$sPassword) {
-                $request = ServerRequest::fromGlobals();
-                $sUser      = $request->getServerParams()['PHP_AUTH_USER'];
-                $sPassword  = $request->getServerParams()['PHP_AUTH_PW'];
-            }
-
-            if (!$sUser || !$sPassword) {
-                $sHttpAuthorization = $_REQUEST[ 'HTTP_AUTHORIZATION' ];
-                if ($sHttpAuthorization) {
-                    $sUser = null;
-                    $sPassword = null;
-                    $aHttpAuthorization = explode(' ', $sHttpAuthorization);
-                    if (is_array($aHttpAuthorization) && count($aHttpAuthorization) >= 2 && strtolower($aHttpAuthorization[ 0 ]) == 'basic') {
-                        $sBasicAuthorization = base64_decode($aHttpAuthorization[ 1 ]);
-                        $aBasicAuthorization = explode(':', $sBasicAuthorization);
-                        if (is_array($aBasicAuthorization) && count($aBasicAuthorization) >= 2) {
-                            $sUser = $aBasicAuthorization[ 0 ];
-                            $sPassword = $aBasicAuthorization[ 1 ];
-                        }
+                $authorization = $request->getHeaderLine('Authorization')
+                    ?: ($serverParams['HTTP_AUTHORIZATION'] ?? $serverParams['REDIRECT_HTTP_AUTHORIZATION'] ?? '');
+                if (preg_match('/^Basic\s+([^\s]+)$/i', trim($authorization), $matches)) {
+                    $credentials = base64_decode($matches[1], true);
+                    if ($credentials !== false && str_contains($credentials, ':')) {
+                        [$sUser, $sPassword] = explode(':', $credentials, 2);
                     }
                 }
             }
 
             $oUser = oxNew(User::class);
-            if (!$sUser || !$sPassword || !$oUser->login($sUser, $sPassword)) {
+            if (!$sUser || !$sPassword || !$oUser->login($sUser, $sPassword) || !$oUser->isMallAdmin()) {
                 throw oxNew(UserException::class, 'EXCEPTION_USER_NOVALIDLOGIN');
             }
         } catch (Exception) {
-            $oShop = Registry::getConfig()->getActiveShop();
-            header('WWW-Authenticate: Basic realm="' . $oShop->getFieldData('oxname') . '"');
+            $realm = (string) Registry::getConfig()->getActiveShop()->getFieldData('oxname');
+            $realm = addcslashes(preg_replace('/[\x00-\x1F\x7F]/', '', $realm), "\\\"");
+            header('WWW-Authenticate: Basic realm="' . $realm . '"');
             http_response_code(401);
-            exit(1);
+            exit;
         }
     }
 

@@ -23,6 +23,7 @@ use D3\Devhelper\Modules\Core\d3_dev_conf;
 use Doctrine\DBAL\Driver\Exception as DBALDriverException;
 use Doctrine\DBAL\Exception as DBALException;
 use Exception;
+use GuzzleHttp\Psr7\ServerRequest;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
@@ -102,42 +103,34 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
     protected function _d3authenticate()
     {
         try {
-            $sUser = Registry::getRequest()->getRequestEscapedParameter('usr');
-            $sPassword = Registry::getRequest()->getRequestEscapedParameter('pwd');
+            $request = ServerRequest::fromGlobals();
+            $serverParams = $request->getServerParams();
+            $sUser = $serverParams['PHP_AUTH_USER'] ?? null;
+            $sPassword = $serverParams['PHP_AUTH_PW'] ?? null;
 
             if (!$sUser || !$sPassword) {
-                $sUser = $_SERVER[ 'PHP_AUTH_USER' ];
-                $sPassword = $_SERVER[ 'PHP_AUTH_PW' ];
-            }
-
-            if (!$sUser || !$sPassword) {
-                $sHttpAuthorization = $_REQUEST[ 'HTTP_AUTHORIZATION' ];
-                if ($sHttpAuthorization) {
-                    $sUser = null;
-                    $sPassword = null;
-                    $aHttpAuthorization = explode(' ', $sHttpAuthorization);
-                    if (is_array($aHttpAuthorization) && count($aHttpAuthorization) >= 2 && strtolower($aHttpAuthorization[ 0 ]) == 'basic') {
-                        $sBasicAuthorization = base64_decode($aHttpAuthorization[ 1 ]);
-                        $aBasicAuthorization = explode(':', $sBasicAuthorization);
-                        if (is_array($aBasicAuthorization) && count($aBasicAuthorization) >= 2) {
-                            $sUser = $aBasicAuthorization[ 0 ];
-                            $sPassword = $aBasicAuthorization[ 1 ];
-                        }
+                $authorization = $request->getHeaderLine('Authorization')
+                    ?: ($serverParams['HTTP_AUTHORIZATION'] ?? $serverParams['REDIRECT_HTTP_AUTHORIZATION'] ?? '');
+                if (preg_match('/^Basic\s+([^\s]+)$/i', trim($authorization), $matches)) {
+                    $credentials = base64_decode($matches[1], true);
+                    if ($credentials !== false && str_contains($credentials, ':')) {
+                        [$sUser, $sPassword] = explode(':', $credentials, 2);
                     }
                 }
             }
             /** @var User $oUser */
             $oUser = oxNew(User::class);
-            if (!$sUser || !$sPassword || !$oUser->login($sUser, $sPassword)) {
+            if (!$sUser || !$sPassword || !$oUser->login($sUser, $sPassword) || !$oUser->isMallAdmin()) {
                 /** @var UserException $oEx */
                 $oEx = oxNew(UserException::class, 'EXCEPTION_USER_NOVALIDLOGIN');
                 throw $oEx;
             }
         } catch (Exception $oEx) {
-            $oShop = Registry::getConfig()->getActiveShop();
-            header('WWW-Authenticate: Basic realm="{' . $oShop->getFieldData('oxname') . '"');
-            header('HTTP/1.0 401 Unauthorized');
-            exit(1);
+            $realm = (string) Registry::getConfig()->getActiveShop()->getFieldData('oxname');
+            $realm = addcslashes(preg_replace('/[\x00-\x1F\x7F]/', '', $realm), "\\\"");
+            header('WWW-Authenticate: Basic realm="' . $realm . '"');
+            http_response_code(401);
+            exit;
         }
     }
 
