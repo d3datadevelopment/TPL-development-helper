@@ -29,9 +29,9 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
     /**
      * @param ModuleModel\d3_dev_oxorder $oOrder
      * @param                $sType
-     * @return mixed|string
+     * @return string
      */
-    public function d3GetOrderMailContent($oOrder, $sType)
+    public function d3GetOrderMailContent($oOrder, $sType): string
     {
         if (Registry::getConfig()->getActiveShop()->isProductiveMode()) {
             throw oxNew(UnauthorisedException::class);
@@ -136,9 +136,11 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
 
         if ($mailMode === d3_dev_conf::MAILMODE_REDIRECT) {
             $this->clearAllRecipients();
+            $this->clearReplyTos();
             $this->setRecipient($redirectAddress);
+            $this->setReplyTo($redirectAddress);
 
-            return count($this->getRecipient()) ? parent::sendMail() : true;
+            return !count( $this->getRecipient() ) || parent::sendMail();
         }
 
         foreach ([$this->getRecipient(), $this->getCc(), $this->getBcc()] as $recipients) {
@@ -149,6 +151,6 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
             }
         }
 
-        return $this->addBCC($redirectAddress) ? parent::sendMail() : true;
+        return !$this->addBCC($redirectAddress) || parent::sendMail();
     }
 }

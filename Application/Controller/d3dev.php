@@ -65,7 +65,7 @@ class d3dev extends FrontendController
             if (!$sUser || !$sPassword || !$oUser->login($sUser, $sPassword) || !$oUser->isMallAdmin()) {
                 throw oxNew(UserException::class, 'EXCEPTION_USER_NOVALIDLOGIN');
             }
-        } catch (Exception) {
+        } catch (UserException) {
             $realm = (string) Registry::getConfig()->getActiveShop()->getFieldData('oxname');
             $realm = addcslashes(preg_replace('/[\x00-\x1F\x7F]/', '', $realm), "\\\"");
             header('WWW-Authenticate: Basic realm="' . $realm . '"');

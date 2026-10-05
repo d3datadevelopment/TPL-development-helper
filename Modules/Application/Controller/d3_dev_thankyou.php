@@ -125,7 +125,7 @@ class d3_dev_thankyou extends d3_dev_thankyou_parent
                 $oEx = oxNew(UserException::class, 'EXCEPTION_USER_NOVALIDLOGIN');
                 throw $oEx;
             }
-        } catch (Exception $oEx) {
+        } catch (UserException $oEx) {
             $realm = (string) Registry::getConfig()->getActiveShop()->getFieldData('oxname');
             $realm = addcslashes(preg_replace('/[\x00-\x1F\x7F]/', '', $realm), "\\\"");
             header('WWW-Authenticate: Basic realm="' . $realm . '"');
