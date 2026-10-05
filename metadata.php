@@ -104,16 +104,22 @@ $aModule = [
             'value' => 'false',
         ],
         [
-            'group' => 'd3dev_mailblock',
-            'name' => ModuleCore\d3_dev_conf::OPTION_BLOCKMAIL,
-            'type' => 'bool',
-            'value' => 'false',
+            'group' => 'd3dev_mailhandling',
+            'name' => ModuleCore\d3_dev_conf::OPTION_MAILMODE,
+            'type' => 'select',
+            'constraints' => implode('|', [
+                ModuleCore\d3_dev_conf::MAILMODE_NORMAL,
+                ModuleCore\d3_dev_conf::MAILMODE_BLOCK,
+                ModuleCore\d3_dev_conf::MAILMODE_REDIRECT,
+                ModuleCore\d3_dev_conf::MAILMODE_COPY,
+            ]),
+            'value' => ModuleCore\d3_dev_conf::MAILMODE_NORMAL,
         ],
         [
-            'group' => 'd3dev_mailblock',
+            'group' => 'd3dev_mailhandling',
             'name' => ModuleCore\d3_dev_conf::OPTION_REDIRECTMAIL,
             'type' => 'str',
-            'value' => 'd3test1@shopmodule.com',
+            'value' => '',
         ],
     ],
 ];

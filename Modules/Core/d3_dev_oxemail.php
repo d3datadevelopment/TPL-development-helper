@@ -20,7 +20,6 @@ use D3\Devhelper\Modules\Application\Model as ModuleModel;
 use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingService;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingServiceInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererBridgeInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererInterface;
@@ -105,25 +104,6 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
     }
 
     /**
-     * @param $aRecInfo
-     * @param array $aCc
-     * @return array
-     */
-    public function d3ChangeRecipient($aRecInfo, array $aCc): array
-    {
-        if (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))
-            && $sNewRecipient != $aRecInfo[0]
-        ) {
-            $aRecInfo[1] = $aRecInfo[1] . " (" . $aRecInfo[0] . ")";
-            $aRecInfo[0] = $sNewRecipient;
-            $aCc[] = $aRecInfo;
-        } elseif (($sNewRecipient = $this->getNewRecipient($aRecInfo[0]))) {
-            $aCc[] = $aRecInfo;
-        }
-        return $aCc;
-    }
-
-    /**
      * @return bool
      * @throws StandardException
      */
@@ -133,93 +113,42 @@ class d3_dev_oxemail extends d3_dev_oxemail_parent
             return parent::sendMail();
         }
 
-        $this->d3clearRecipients();
-        $this->d3clearReplies();
-        $this->d3clearReplyTo();
-        $this->d3clearCC();
-        $this->d3clearBCC();
+        $moduleSettingService = ContainerFactory::getInstance()->getContainer()
+            ->get(ModuleSettingServiceInterface::class);
+        $mailMode = $moduleSettingService->getString(d3_dev_conf::OPTION_MAILMODE, 'd3dev')->toString();
 
-        if (count($this->getRecipient())) {
+        if ($mailMode === d3_dev_conf::MAILMODE_BLOCK) {
+            return true;
+        }
+
+        if ($mailMode === d3_dev_conf::MAILMODE_NORMAL) {
             return parent::sendMail();
         }
 
-        return true;
-    }
-
-    public function d3clearRecipients()
-    {
-        $aRecipients = [];
-        if (is_array($this->_aRecipients) && count($this->_aRecipients)) {
-            foreach ($this->_aRecipients as $aRecInfo) {
-                $aRecipients = $this->d3ChangeRecipient($aRecInfo, $aRecipients);
-            }
+        if (!in_array($mailMode, [d3_dev_conf::MAILMODE_REDIRECT, d3_dev_conf::MAILMODE_COPY], true)) {
+            return true;
         }
-        $this->_aRecipients = $aRecipients;
-    }
 
-    public function d3clearReplies()
-    {
-        $aRecipients = [];
-        if (is_array($this->_aReplies) && count($this->_aReplies)) {
-            foreach ($this->_aReplies as $aRecInfo) {
-                $aRecipients = $this->d3ChangeRecipient($aRecInfo, $aRecipients);
-            }
+        $redirectAddress = trim($moduleSettingService->getString(d3_dev_conf::OPTION_REDIRECTMAIL, 'd3dev')->toString());
+        if (!filter_var($redirectAddress, FILTER_VALIDATE_EMAIL)) {
+            return true;
         }
-        $this->_aReplies = $aRecipients;
-    }
 
-    public function d3clearReplyTo()
-    {
-        $aRecipients = [];
-        if (is_array($this->ReplyTo) && count($this->ReplyTo)) {
-            foreach ($this->ReplyTo as $aRecInfo) {
-                $aRecipients = $this->d3ChangeRecipient($aRecInfo, $aRecipients);
-            }
+        if ($mailMode === d3_dev_conf::MAILMODE_REDIRECT) {
+            $this->clearAllRecipients();
+            $this->setRecipient($redirectAddress);
+
+            return count($this->getRecipient()) ? parent::sendMail() : true;
         }
-        $this->ReplyTo = $aRecipients;
-    }
 
-    public function d3clearCC()
-    {
-        $aCc = [];
-        if (is_array($this->cc) && count($this->cc)) {
-            foreach ($this->cc as $aRecInfo) {
-                $aCc = $this->d3ChangeRecipient($aRecInfo, $aCc);
+        foreach ([$this->getRecipient(), $this->getCc(), $this->getBcc()] as $recipients) {
+            foreach ($recipients as $recipient) {
+                if (strcasecmp($recipient[0], $redirectAddress) === 0) {
+                    return parent::sendMail();
+                }
             }
         }
 
-        $this->cc = $aCc;
-    }
-
-    public function d3clearBCC()
-    {
-        $aCc = [];
-        if (is_array($this->bcc) && count($this->bcc)) {
-            foreach ($this->bcc as $aRecInfo) {
-                $aCc = $this->d3ChangeRecipient($aRecInfo, $aCc);
-            }
-        }
-
-        $this->bcc = $aCc;
-    }
-
-    /**
-     * @param $sMailAddress
-     *
-     * @return bool|string
-     */
-    public function getNewRecipient($sMailAddress)
-    {
-        /** @var ModuleSettingService $moduleSettingService */
-        $moduleSettingService = ContainerFactory::getInstance()->getContainer()->get(ModuleSettingServiceInterface::class);
-        $moduleSettingService->getString(d3_dev_conf::OPTION_REDIRECTMAIL, 'd3dev')->toString();
-
-        if ($moduleSettingService->getBoolean(d3_dev_conf::OPTION_BLOCKMAIL, 'd3dev')) {
-            return false;
-        } elseif (strlen(trim($moduleSettingService->getString(d3_dev_conf::OPTION_REDIRECTMAIL, 'd3dev')->toString()))) {
-            return trim($moduleSettingService->getString(d3_dev_conf::OPTION_REDIRECTMAIL, 'd3dev')->toString());
-        }
-
-        return $sMailAddress;
+        return $this->addBCC($redirectAddress) ? parent::sendMail() : true;
     }
 }

@@ -22,6 +22,11 @@ class d3_dev_conf
 
     public const OPTION_SHOWMAILSINBROWSER = 'blD3DevShowOrderMailsInBrowser';
 
-    public const OPTION_BLOCKMAIL = 'blD3DevBlockMails';
+    public const OPTION_MAILMODE = 'sD3DevMailMode';
     public const OPTION_REDIRECTMAIL = 'sD3DevRedirectMail';
+
+    public const MAILMODE_BLOCK = 'block';
+    public const MAILMODE_REDIRECT = 'redirect';
+    public const MAILMODE_COPY = 'copy';
+    public const MAILMODE_NORMAL = 'normal';
 }

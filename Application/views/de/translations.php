@@ -40,11 +40,13 @@ return [
         'letzte vorliegende Bestellung geladen. Über den Parameter "d3ordernr=X" kann eine bestimmten Bestellung '.
         'vorgegeben werden.',
 
-    'SHOP_MODULE_GROUP_d3dev_mailblock'                         => 'Mailversand',
-    'SHOP_MODULE_blD3DevBlockMails'                             => 'Mails an beliebige Mailadressen werden nicht '.
-        'versandt',
-    'HELP_SHOP_MODULE_blD3DevBlockMails'                        => 'Der Mailversand wird komplett geblockt.',
-    'SHOP_MODULE_sD3DevRedirectMail'                            => 'versendete Mails an diese Adresse umleiten',
-    'HELP_SHOP_MODULE_sD3DevRedirectMail'                       => 'Wenn leer, erfolgt keine Umleitung. Ohne '.
-        'zusätzliche Blockieroption werden die Mails dann an den original Empfänger gesendet.',
+    'SHOP_MODULE_GROUP_d3dev_mailhandling'                      => 'Mailversand im Development-Modus',
+    'SHOP_MODULE_sD3DevMailMode'                                => 'Verhalten für ausgehende Mails',
+    'HELP_SHOP_MODULE_sD3DevMailMode'                           => 'Block: Mails werden nicht versandt. Umleiten: Mails gehen nur an die Entwickleradresse. Kopie: Mails gehen an die originalen Empfänger und zusätzlich an die Entwickleradresse in CC. Normal: Mails gehen unverändert an die originalen Empfänger.',
+    'SHOP_MODULE_sD3DevMailMode_block'                          => 'Blockieren',
+    'SHOP_MODULE_sD3DevMailMode_redirect'                       => 'Vollständig an Entwickleradresse umleiten',
+    'SHOP_MODULE_sD3DevMailMode_copy'                           => 'Originalempfänger, Entwickleradresse in CC',
+    'SHOP_MODULE_sD3DevMailMode_normal'                         => 'Normaler Versand',
+    'SHOP_MODULE_sD3DevRedirectMail'                            => 'Entwickleradresse für Umleitung/Kopie',
+    'HELP_SHOP_MODULE_sD3DevRedirectMail'                       => 'Wird für vollständige Umleitung und Kopie verwendet. Ist die Adresse in einem dieser Modi leer oder ungültig, wird die Mail sicherheitshalber nicht versandt.',
 ];
