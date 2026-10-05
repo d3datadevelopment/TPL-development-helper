@@ -2,7 +2,7 @@
 
 ## Versionsübersicht:
 
-* 4.x - OXID 7.0 bis 7.1
+* 4.x - OXID 7.0 bis 7.5
 * 3.x - OXID 6.2 bis 6.5
 * 2.x - OXID 6.0 bis 6.1
 * 1.x - bis OXID 4.10 / 5.3
@@ -17,8 +17,7 @@
 
 Diese Tool soll bei täglichen Entwicklungsaufgaben im OXID eShop helfen, die (systembedingt) vom Shopsystem erschwert werden.
 
-* Mailversand (übers Shopframework) übers Shopframework wird blockiert __oder__
-* Mails (übers Shopframework) werden an alternative Mailadresse umgeleitet
+* Mailversand über das Shopframework lässt sich normal ausführen, blockieren, vollständig umleiten oder zusätzlich an eine Entwickleradresse kopieren
     (Das Tool setzt direkt an der oxemail::_sendMail()-Methode an und kann damit __jeden__ Mailversand kontrollieren, der übers Framework läuft. Man muss nicht X verschiedene Module überwachen und hat auch Kontrolle über Mailerweiterungen, die keinen Stage-Einsatz vorsehen.)
 * unterbindet das Löschen des Warenkorbs nach Bestellabschluss
 * Thankyou-Seite ist auch ohne Bestellabschluss aufrufbar (unter Angabe der Bestellnummer auch für eine bestimmte Bestellung)
@@ -44,7 +43,7 @@ Um unser Tool verwenden zu können, folgen Sie bitte diesen Schritten:
 
    ![Adminbereich -> Erweiterungen -> Module -> TPL Development Tool -> Einstell.](docs/step3.jpg "gewünschte Funktionen freischalten")
    
-4. Über die Links im Tab "Stamm" können Sie die betreffenden Seiten aufrufen. Vor der Darstellung wird ein Benutzername und Passwort abgefragt. Hierfür verwenden Sie die Anmeldedaten des Adminbereichs Ihres Shops.
+4. Über die Links im Tab "Stamm" können Sie die betreffenden Seiten aufrufen. Der Zugriff erfordert HTTP Basic Auth mit den Anmeldedaten eines Shop-Administrators.
 
 5. An den E-Mail- und Thankyou-Links gibt es einen leeren Parameter, den Sie bei Bedarf mit einer Bestellnummer füllen können. Dann wird statt der letzten Bestellung ganz gezielt eine andere Bestellung zur Darstellung verwendet.
 

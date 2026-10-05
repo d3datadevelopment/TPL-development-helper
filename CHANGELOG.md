@@ -4,7 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased](https://git.d3data.de/D3Public/devhelper/compare/4.1.0.0...rel_4.x)
+## [4.2.0.0](https://git.d3data.de/D3Public/devhelper/compare/4.1.0.0...4.2.0.0) (2026-10-05)
+
+### Changed
+- replace separate mail blocking and redirection settings with explicit normal, block, redirect and copy modes; normal is the default
+- fully redirect mail recipients and Reply-To addresses in redirect mode
+- use an empty developer address by default and block redirect or copy mode if the address is invalid
+- accept Basic Auth credentials only through server-provided credentials or the Authorization header
+- challenge only for expected login failures and require Mall Admin rights for developer views
+- tested with OXID eShop 7.0 through 7.5
+
+### Security
+- escape plain mail content before displaying it in a textarea
+- prevent caching of mail previews and sandbox the preview response with CSP
+- sanitize the Basic Auth realm and return a consistent 401 response
 
 ## [4.1.0.0](https://git.d3data.de/D3Public/devhelper/compare/4.0.0.0...4.1.0.0) (2026-09-22)
 ### Added
@@ -37,36 +50,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0.0](https://git.d3data.de/D3Public/devhelper/compare/2.0.1.0...3.0.0.0) (2020-11-11)
 ### Changed
-- Modul verwendbar in OXID 6.2, deprecated Code bestmöglich entfernt
-- Anzeige von Anfragemails entfernt, da dazugehöriges Modul nicht weiter entwickelt wird
+- Modul verwendbar in OXID 6.2, deprecated Code bestmÃ¶glich entfernt
+- Anzeige von Anfragemails entfernt, da dazugehÃ¶riges Modul nicht weiter entwickelt wird
 
 ## [2.0.1.0](https://git.d3data.de/D3Public/devhelper/compare/2.0.0.0...2.0.1.0) (2019-10-21)
 ### Changed
-- Mails können auch Dreingabeartikel regenerieren und darstellen
-- weitere Mailinformationen werden für Mailumleitung geändert
+- Mails kÃ¶nnen auch Dreingabeartikel regenerieren und darstellen
+- weitere Mailinformationen werden fÃ¼r Mailumleitung geÃ¤ndert
 ### Fixed
 - verhindert Thankyou Redirect, wenn keine Order geladen wurde
-- Debugging von Mails mit Dreingabebestellungen löscht diese Discounts in der gesamten Bestellung
+- Debugging von Mails mit Dreingabebestellungen lÃ¶scht diese Discounts in der gesamten Bestellung
 
 ## [2.0.0.0](https://git.d3data.de/D3Public/devhelper/compare/1.2.0.0...2.0.0.0) (2018-02-23)
 ### Added
-- verfügbar für OXID 6
+- verfÃ¼gbar fÃ¼r OXID 6
 - Installation via Composer
 
 ## [1.2.0.0](https://git.d3data.de/D3Public/devhelper/compare/1.1.0.0...1.2.0.0) (2017-11-21)
 ### Added
-- Mail-Anzeige fordert zusätzlich Authentfikation mit einem Shopadmin-Konto
+- Mail-Anzeige fordert zusÃ¤tzlich Authentfikation mit einem Shopadmin-Konto
 - Seitenencoding definiert
 ### Changed
-- Dokumentation ergänzt
+- Dokumentation ergÃ¤nzt
 
 ## [1.1.0.0](https://git.d3data.de/D3Public/devhelper/compare/1.0.0.0...1.1.0.0) (2017-05-31)
 ### Added
-- Mailversand übers Shopframework wird blockiert oder
+- Mailversand Ã¼bers Shopframework wird blockiert oder
 - Mails werden an alternative Mailadresse umgeleitet
 
 ## [1.0.0.0](https://git.d3data.de/D3Public/devhelper/releases/tag/1.0.0.0) (2015-12-16)
 ### Added
-- unterbindet das Löschen des Warenkorbs nach Bestellabschluss
-- Thankyou ist ohne Bestellabschluss aufrufbar (unter Angabe der Bestellnummer auch für eine bestimmte Bestellung)
-- Bestellbestätigungsmails und (sofern D3-Modul installiert) Anfragebestätigungsmails sind im Browser darstellbar (unter Angabe der Bestellnummer auch für eine bestimmte Bestellung)
+- unterbindet das LÃ¶schen des Warenkorbs nach Bestellabschluss
+- Thankyou ist ohne Bestellabschluss aufrufbar (unter Angabe der Bestellnummer auch fÃ¼r eine bestimmte Bestellung)
+- BestellbestÃ¤tigungsmails und (sofern D3-Modul installiert) AnfragebestÃ¤tigungsmails sind im Browser darstellbar (unter Angabe der Bestellnummer auch fÃ¼r eine bestimmte Bestellung)
