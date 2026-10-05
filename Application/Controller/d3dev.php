@@ -82,6 +82,8 @@ class d3dev extends FrontendController
     public function showOrderMailContent(): void
     {
         try {
+            header('Cache-Control: no-store, private');
+            header('Content-Security-Policy: sandbox');
             header('Content-type: text/html; charset=' . Registry::getLang()->translateString('charset'));
             /** @var ModuleSettingService $moduleSettingService */
             $moduleSettingService = ContainerFactory::getInstance()->getContainer()->get(ModuleSettingServiceInterface::class);
@@ -124,7 +126,7 @@ class d3dev extends FrontendController
                 <<<TEXTAREA
 <textarea style="width: 100%%; height: 100%%">%s</textarea>
 TEXTAREA,
-                $mailContent
+                htmlspecialchars($mailContent, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             );
         }
 
