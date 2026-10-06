@@ -83,7 +83,7 @@ class d3dev extends FrontendController
     {
         try {
             header('Cache-Control: no-store, private');
-            header('Content-Security-Policy: sandbox');
+            header('Content-Security-Policy: sandbox allow-same-origin');
             header('Content-type: text/html; charset=' . Registry::getLang()->translateString('charset'));
             /** @var ModuleSettingService $moduleSettingService */
             $moduleSettingService = ContainerFactory::getInstance()->getContainer()->get(ModuleSettingServiceInterface::class);
